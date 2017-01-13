@@ -13,18 +13,20 @@ public class MainApp extends Application {
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
+	public PropertiesHandler appProperties = PropertiesHandler.getInstance(); 
 	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle(AppConstants.APP_NAME);
+		this.primaryStage.setTitle(appProperties.getAppTitleProp());
 		initRootLayout();
 		initCatalogLayout();
+		
 	}
 	private void initRootLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(AppConstants.ROOT_VIEW));
+			fxml.setLocation(MainApp.class.getResource(appProperties.getRootviewProp()));
 			rootLayout = (BorderPane)fxml.load();
 			primaryStage.setScene(new Scene(rootLayout));
 			primaryStage.show();
@@ -35,23 +37,13 @@ public class MainApp extends Application {
 	private void initCatalogLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(AppConstants.CATALOG_VIEW));
+			fxml.setLocation(MainApp.class.getResource(appProperties.getCatalogviewProp()));
 			AnchorPane catalogAnchor = (AnchorPane)fxml.load();
 			rootLayout.setCenter(catalogAnchor);
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
-	/*private Object loadFXML(String location) {
-		try {
-			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(location));
-			return fxml.load();
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		return new Object();
-	}*/
 
 	public static void main(String[] args) {
 		launch(args);
