@@ -2,6 +2,9 @@ package com.benlinus92.dskvideocatalog;
 
 import java.io.IOException;
 
+import com.benlinus92.dskvideocatalog.parsers.Parser;
+import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,7 +24,8 @@ public class MainApp extends Application {
 		this.primaryStage.setTitle(appProperties.getAppTitleProp());
 		initRootLayout();
 		initCatalogLayout();
-		
+		Parser parser = new TreeTvParser();
+		parser.parseHtml();
 	}
 	private void initRootLayout() {
 		try {
