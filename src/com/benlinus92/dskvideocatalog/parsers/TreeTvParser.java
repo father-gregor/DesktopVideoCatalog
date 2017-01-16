@@ -47,10 +47,10 @@ public class TreeTvParser implements Parser {
 		return sb.toString();
 	}
 	@Override
-	public void parseHtml() {
+	public List<VideoItem> parseHtml() {
+		List<VideoItem> itemsList = new ArrayList<>();
 		try {
 			String html = getHtmlContent();
-			List<VideoItem> itemsList = new ArrayList<>();
 			Document content = Jsoup.parse(html.toString());
 			Elements elems = content.select("div.item");
 			for(Element elem: elems) {
@@ -60,8 +60,9 @@ public class TreeTvParser implements Parser {
 			e.printStackTrace();
 		} catch(IOException e) {
 			e.printStackTrace();
+		} finally {
+			return itemsList;
 		}
-		
 	}
 	@Override
 	public VideoItem createVideoItemFromHtml(Element el) {
