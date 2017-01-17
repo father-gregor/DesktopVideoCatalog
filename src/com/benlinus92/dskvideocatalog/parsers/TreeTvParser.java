@@ -29,13 +29,17 @@ import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.model.VideoItem;
 
 public class TreeTvParser implements Parser {
-	private final static String TREE_TV_URL = "http://tree.tv";
+	private final static String TREE_TV_FILMS_URL = "http://tree.tv/films/sortType/new/page/";
+	private final static String TREE_TV_SERIES_URL = "http://tree.tv/serials/sortType/new/page/";
+	private final static String TREE_TV_MULTFILMS = "http://tree.tv/multfilms/sortType/new/page/";
+	private final static String TREE_TV_BASIC_URL = "http://tree.tv";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private final static String ID_SAMPLE = "TREE_TV_";
 	
 	@Override
-	public String getHtmlContent() throws IOException, ClientProtocolException {
+	public String getHtmlContent(String url) throws IOException, ClientProtocolException {
 		HttpClient client = HttpClientBuilder.create().build();
-		HttpGet request = new HttpGet(TREE_TV_URL + "/films");
+		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", AppConstants.USER_AGENT); 
 		HttpResponse response = client.execute(request);
 		System.out.println(response.getStatusLine().getStatusCode());
@@ -47,10 +51,19 @@ public class TreeTvParser implements Parser {
 		return sb.toString();
 	}
 	@Override
-	public List<VideoItem> parseHtml() {
+	public List<VideoItem> getVideoItemsByCategory(int category, int page) {
 		List<VideoItem> itemsList = new ArrayList<>();
 		try {
-			String html = getHtmlContent();
+			String url = "";
+			if(category == AppConstants.CATEGORY_FILMS)
+				url = TREE_TV_FILMS_URL;
+			else if(category == AppConstants.CATEGORY_SERIES)
+				url = TREE_TV_SERIES_URL;
+			else if(category == AppConstants.CATEGORY_MULTFILMS)
+				url = TREE_TV_MULTFILMS;
+			else
+				url = TREE_TV_FILMS_URL;
+			String html = getHtmlContent(url + Integer.toString(page));
 			Document content = Jsoup.parse(html.toString());
 			Elements elems = content.select("div.item");
 			for(Element elem: elems) {
@@ -60,16 +73,15 @@ public class TreeTvParser implements Parser {
 			e.printStackTrace();
 		} catch(IOException e) {
 			e.printStackTrace();
-		} finally {
-			return itemsList;
-		}
+		} 
+		return itemsList;
 	}
 	@Override
 	public VideoItem createVideoItemFromHtml(Element el) {
 		VideoItem item = new VideoItem();
 		Element tempElem = el.select("h2").first();
 		item.setTitle(tempElem.text());
-		item.setUrl(TREE_TV_URL + tempElem.select("a").attr("href"));
+		item.setUrl(TREE_TV_BASIC_URL + tempElem.select("a").attr("href"));
 		for(Element elem: el.select("img")) {
 			if(elem.attr("title").length() > 0) {
 				item.setPrevImg(elem.attr("src"));
@@ -78,6 +90,7 @@ public class TreeTvParser implements Parser {
 		}
 		item.setYear(el.select("div.smoll_year").text());
 		item.setAddedDate(LocalDate.parse(el.select("div.date_create span").text(), DATE_FORMAT));
+		item.setId(ID_SAMPLE);
 		return item;
 	}
 

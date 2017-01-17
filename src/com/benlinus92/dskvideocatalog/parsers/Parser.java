@@ -9,7 +9,7 @@ import org.jsoup.nodes.Element;
 import com.benlinus92.dskvideocatalog.model.VideoItem;
 
 public interface Parser {
-	public String getHtmlContent() throws IOException;
-	public List<VideoItem> parseHtml();
+	public String getHtmlContent(String url) throws IOException;
+	public List<VideoItem> getVideoItemsByCategory(int category, int page);
 	public VideoItem createVideoItemFromHtml(Element el);
 }
