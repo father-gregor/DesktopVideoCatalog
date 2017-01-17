@@ -8,7 +8,7 @@ public class PropertiesHandler {
 	private static PropertiesHandler instance = null;
 	private String filename = "application.properties";
 	private String appTitleProp = "";
-	private String rootviewProp = "";
+	private String rootWindowViewProp = "";
 	private String catalogviewProp = "";
 	
 	public static PropertiesHandler getInstance() {
@@ -24,7 +24,7 @@ public class PropertiesHandler {
 			if(input != null) {
 				prop.load(input);
 				appTitleProp = prop.getProperty("apptitle");
-				rootviewProp = prop.getProperty("rootview");
+				rootWindowViewProp = prop.getProperty("rootwindowview");
 				catalogviewProp = prop.getProperty("catalogview");
 			}
 			
@@ -42,8 +42,8 @@ public class PropertiesHandler {
 	public String getAppTitleProp() {
 		return appTitleProp;
 	}
-	public String getRootviewProp() {
-		return rootviewProp;
+	public String getRootWindowViewProp() {
+		return rootWindowViewProp;
 	}
 	public String getCatalogviewProp() {
 		return catalogviewProp;

@@ -1,6 +1,7 @@
 package com.benlinus92.dskvideocatalog.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -8,12 +9,22 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class VideoItem {
+	private StringProperty id = new SimpleStringProperty("");
 	private StringProperty title = new SimpleStringProperty("");
 	private StringProperty year = new SimpleStringProperty("");
 	private StringProperty url = new SimpleStringProperty("");
 	private StringProperty prevImg = new SimpleStringProperty("");
 	private ObjectProperty<LocalDate> addedDate = new SimpleObjectProperty<LocalDate>(LocalDate.MIN);
 	
+	public String getId() {
+		return id.get();
+	}
+	public StringProperty idProperty() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id.set(id + System.currentTimeMillis());
+	}
 	public String getTitle() {
 		return title.get();
 	}
