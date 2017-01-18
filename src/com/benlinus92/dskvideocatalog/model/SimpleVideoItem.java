@@ -8,7 +8,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class VideoItem {
+public class SimpleVideoItem {
 	private StringProperty id = new SimpleStringProperty("");
 	private StringProperty title = new SimpleStringProperty("");
 	private StringProperty year = new SimpleStringProperty("");
