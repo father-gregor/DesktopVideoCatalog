@@ -59,7 +59,7 @@ public class TreeTvParser implements Parser {
 				url = TREE_TV_FILMS_URL;
 			else if(category == AppConstants.CATEGORY_SERIES)
 				url = TREE_TV_SERIES_URL;
-			else if(category == AppConstants.CATEGORY_MULTFILMS)
+			else if(category == AppConstants.CATEGORY_CARTOONS)
 				url = TREE_TV_MULTFILMS;
 			else
 				url = TREE_TV_FILMS_URL;
