@@ -8,7 +8,7 @@
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="587.0" prefWidth="552.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benlinus92.dskvideocatalog.viewcontroller.CatalogController">
    <children>
       <Label layoutX="24.0" layoutY="24.0" text="Videos4" />
-      <ScrollPane fx:id="scrollCatalogPane" hbarPolicy="NEVER" layoutX="17.0" layoutY="54.0" prefHeight="521.0" prefWidth="521.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="17.0" AnchorPane.rightAnchor="17.0" AnchorPane.topAnchor="54.0">
+      <ScrollPane fx:id="scrollCatalogPane" fitToWidth="true" hbarPolicy="NEVER" layoutX="17.0" layoutY="54.0" prefHeight="521.0" prefWidth="521.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="17.0" AnchorPane.rightAnchor="17.0" AnchorPane.topAnchor="54.0">
          <content>
             <TilePane fx:id="mainTilePane" prefHeight="548.0" prefWidth="508.0" tileAlignment="TOP_CENTER" />
          </content>
