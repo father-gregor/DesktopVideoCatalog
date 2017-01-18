@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.MainApp;
-import com.benlinus92.dskvideocatalog.model.VideoItem;
+import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 
@@ -40,11 +40,6 @@ public class CatalogController {
 	
 	@FXML
 	private void initialize() {
-		List<VideoItem> initialItems = parser.getVideoItemsByCategory(currentCategory, currentPage);
-		List<GridPane> gridItemsList = new ArrayList<>();
-		for(VideoItem itemObj: initialItems) {
-			gridItemsList.add(createGridForVideoItem(itemObj));
-		}
 		scrollCatalogPane.vvalueProperty().addListener((ObservableValue<? extends Number> ov, Number oldV, Number newV) -> {
 			if(newV.doubleValue() >= (scrollCatalogPane.getVmax() - 0.05)) {
 				System.out.println(scrollCatalogPane.getVmax());
@@ -61,28 +56,27 @@ public class CatalogController {
 		mainTilePane.setPadding(new Insets(10, 10, 10, 10));
 		mainTilePane.setHgap(10.0);
 		mainTilePane.setVgap(10.0);
-		currentPage++;
-		mainTilePane.getChildren().addAll(gridItemsList);
+		updateCatalog();
 	}
 	
 	public void setMainApp(MainApp app) {
 		this.mainApp = app;
 	}
 	public void updateCatalog() {
-		List<VideoItem> items = parser.getVideoItemsByCategory(currentCategory, currentPage);
-		List<GridPane> innerGridItemsList = new ArrayList<>();
-		for(VideoItem itemObj: items) {
-			innerGridItemsList.add(createGridForVideoItem(itemObj));
+		List<SimpleVideoItem> items = parser.getVideoItemsByCategory(currentCategory, currentPage);
+		List<GridPane> gridItemsList = new ArrayList<>();
+		for(SimpleVideoItem itemObj: items) {
+			gridItemsList.add(createGridForVideoItem(itemObj));
 		}
 		currentPage++;
-		mainTilePane.getChildren().addAll(innerGridItemsList);
+		mainTilePane.getChildren().addAll(gridItemsList);
 	}
 	public void updateCatalogWithNewCategory(int category) {
 		setCurrentCategory(category);
 		mainTilePane.getChildren().clear();
 		updateCatalog();
 	}
-	private GridPane createGridForVideoItem(VideoItem itemObj) {
+	private GridPane createGridForVideoItem(SimpleVideoItem itemObj) {
 		GridPane videoItemPane = new GridPane();
 		ImageView itemImage = new ImageView(itemObj.getPrevImg());
 		itemImage.setFitWidth(135.0);
@@ -111,7 +105,7 @@ public class CatalogController {
 		@Override
 		public void handle(MouseEvent me) {
 			System.out.println("Clicked");
-			System.out.println( ((VideoItem)((GridPane)me.getSource()).getUserData()).getTitle() );
+			System.out.println( ((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getTitle() );
 		}
 	}
 }
