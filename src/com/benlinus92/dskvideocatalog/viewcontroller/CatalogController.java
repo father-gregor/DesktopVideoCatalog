@@ -48,13 +48,7 @@ public class CatalogController {
 		scrollCatalogPane.vvalueProperty().addListener((ObservableValue<? extends Number> ov, Number oldV, Number newV) -> {
 			if(newV.doubleValue() >= (scrollCatalogPane.getVmax() - 0.05)) {
 				System.out.println(scrollCatalogPane.getVmax());
-				List<VideoItem> items = parser.getVideoItemsByCategory(currentCategory, currentPage);
-				List<GridPane> innerGridItemsList = new ArrayList<>();
-				for(VideoItem itemObj: items) {
-					innerGridItemsList.add(createGridForVideoItem(itemObj));
-				}
-				currentPage++;
-				mainTilePane.getChildren().addAll(innerGridItemsList);
+				updateCatalog();
 			}
 		});
 		/*scrollCatalogPane.setOnScroll(new EventHandler<ScrollEvent>() {
@@ -73,6 +67,20 @@ public class CatalogController {
 	
 	public void setMainApp(MainApp app) {
 		this.mainApp = app;
+	}
+	public void updateCatalog() {
+		List<VideoItem> items = parser.getVideoItemsByCategory(currentCategory, currentPage);
+		List<GridPane> innerGridItemsList = new ArrayList<>();
+		for(VideoItem itemObj: items) {
+			innerGridItemsList.add(createGridForVideoItem(itemObj));
+		}
+		currentPage++;
+		mainTilePane.getChildren().addAll(innerGridItemsList);
+	}
+	public void updateCatalogWithNewCategory(int category) {
+		setCurrentCategory(category);
+		mainTilePane.getChildren().clear();
+		updateCatalog();
 	}
 	private GridPane createGridForVideoItem(VideoItem itemObj) {
 		GridPane videoItemPane = new GridPane();
@@ -93,6 +101,10 @@ public class CatalogController {
 		videoItemPane.setUserData(itemObj);
 		videoItemPane.setOnMouseClicked(new VideoItemClickedEventHandler());
 		return videoItemPane;
+	}
+	public void setCurrentCategory(int category) {
+		this.currentPage = 1;
+		this.currentCategory = category;
 	}
 	private class VideoItemClickedEventHandler implements EventHandler<MouseEvent> {
 

@@ -26,12 +26,11 @@ public class MainApp extends Application {
 	private Pane catalogLayout;
 	private RootWindowController root;
 	private CatalogController catalog;
-	public PropertiesHandler appProperties = PropertiesHandler.getInstance(); 
 	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle(appProperties.getAppTitleProp());
+		this.primaryStage.setTitle(PropertiesHandler.getInstance().getAppTitleProp());
 		initRootWindowLayout();
 		initCatalogLayout();
 		root.setRightSidePane(catalogLayout);
@@ -40,7 +39,7 @@ public class MainApp extends Application {
 	private void initRootWindowLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(appProperties.getRootWindowViewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getRootWindowViewProp()));
 			mainLayout = (AnchorPane)fxml.load();
 			root = fxml.getController();
 			root.setMainApp(this);
@@ -56,14 +55,16 @@ public class MainApp extends Application {
 	private void initCatalogLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(appProperties.getCatalogviewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getCatalogviewProp()));
 			catalogLayout = (AnchorPane)fxml.load();
-			//rootLayout.setCenter(catalogAnchor);
 			catalog = fxml.getController();
 			catalog.setMainApp(this);
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public void changeCategory(int category) {
+		catalog.updateCatalogWithNewCategory(category);
 	}
 
 	public static void main(String[] args) {
@@ -72,5 +73,8 @@ public class MainApp extends Application {
 	
 	public Stage getPrimaryStage() {
 		return this.primaryStage;
+	}
+	public CatalogController getCatalogController() {
+		return this.catalog;
 	}
 }
