@@ -45,10 +45,10 @@ public class MainApp extends Application {
 			root = fxml.getController();
 			root.setMainApp(this);
 			primaryStage.setScene(new Scene(mainLayout));
-			primaryStage.setMaxHeight(800.0);
-			primaryStage.setMaxWidth(800.0);
+			primaryStage.setMaxHeight(1300.0);
+			primaryStage.setMaxWidth(1500.0);
 			primaryStage.setMinHeight(600.0);
-			primaryStage.setMinWidth(700.0);
+			primaryStage.setMinWidth(750.0);
 		} catch(IOException e) {
 			e.printStackTrace();
 		}

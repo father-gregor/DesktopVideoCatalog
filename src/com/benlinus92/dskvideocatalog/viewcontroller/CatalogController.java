@@ -46,7 +46,8 @@ public class CatalogController {
 			gridItemsList.add(createGridForVideoItem(itemObj));
 		}
 		scrollCatalogPane.vvalueProperty().addListener((ObservableValue<? extends Number> ov, Number oldV, Number newV) -> {
-			if(newV.doubleValue() >= scrollCatalogPane.getVmax()) {
+			if(newV.doubleValue() >= (scrollCatalogPane.getVmax() - 0.05)) {
+				System.out.println(scrollCatalogPane.getVmax());
 				List<VideoItem> items = parser.getVideoItemsByCategory(currentCategory, currentPage);
 				List<GridPane> innerGridItemsList = new ArrayList<>();
 				for(VideoItem itemObj: items) {
@@ -81,6 +82,9 @@ public class CatalogController {
 		Label itemTitle = new Label(itemObj.getTitle());
 		itemTitle.setMaxWidth(Double.MAX_VALUE);
 		itemTitle.setAlignment(Pos.CENTER);
+		itemTitle.setWrapText(true);
+		itemTitle.setPrefWidth(100);
+		itemTitle.setPrefHeight(200);
 		videoItemPane.setAlignment(Pos.CENTER);
 		videoItemPane.add(itemImage, 0, 0);
 		videoItemPane.add(itemTitle, 0, 1);
