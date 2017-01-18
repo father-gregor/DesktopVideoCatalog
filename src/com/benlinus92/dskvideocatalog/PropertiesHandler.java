@@ -2,14 +2,18 @@ package com.benlinus92.dskvideocatalog;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 public class PropertiesHandler {
 	private static PropertiesHandler instance = null;
-	private String filename = "application.properties";
-	private String appTitleProp = "";
+	private String fileAppProp = "application.properties";
+	private String fileLocale = "locale/MenuUnits";
 	private String rootWindowViewProp = "";
 	private String catalogviewProp = "";
+	private ResourceBundle appUnitsBundle;
 	
 	public static PropertiesHandler getInstance() {
 		if(instance == null)
@@ -20,15 +24,18 @@ public class PropertiesHandler {
 		Properties prop = new Properties();
 		InputStream input = null;
 		try {
-			input = this.getClass().getClassLoader().getResourceAsStream(filename);
+			input = this.getClass().getClassLoader().getResourceAsStream(fileAppProp);
 			if(input != null) {
 				prop.load(input);
-				appTitleProp = prop.getProperty("apptitle");
 				rootWindowViewProp = prop.getProperty("rootwindowview");
 				catalogviewProp = prop.getProperty("catalogview");
+				Locale locale = new Locale(prop.getProperty("locale.lang"), prop.getProperty("locale.country"));
+				appUnitsBundle = ResourceBundle.getBundle(fileLocale, locale);
 			}
 			
 		} catch(IOException e) {
+			e.printStackTrace();
+		} catch(MissingResourceException e) {
 			e.printStackTrace();
 		} finally {
 			try {
@@ -40,12 +47,21 @@ public class PropertiesHandler {
 		}
 	}
 	public String getAppTitleProp() {
-		return appTitleProp;
+		return appUnitsBundle.getString("apptitle");
 	}
 	public String getRootWindowViewProp() {
 		return rootWindowViewProp;
 	}
 	public String getCatalogviewProp() {
 		return catalogviewProp;
+	}
+	public String getFilmsUnitName() {
+		return appUnitsBundle.getString("unit.films");
+	}
+	public String getSeriesUnitName() {
+		return appUnitsBundle.getString("unit.series");
+	}
+	public String getCartoonsUnitName() {
+		return appUnitsBundle.getString("unit.cartoons");
 	}
 }
