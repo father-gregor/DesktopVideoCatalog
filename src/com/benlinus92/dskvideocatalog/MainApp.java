@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 import com.benlinus92.dskvideocatalog.viewcontroller.CatalogController;
+import com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController;
 import com.benlinus92.dskvideocatalog.viewcontroller.RootWindowController;
 
 import javafx.application.Application;
@@ -24,8 +25,10 @@ public class MainApp extends Application {
 	private Stage primaryStage;
 	private Pane mainLayout;
 	private Pane catalogLayout;
+	private Pane itemBrowserLayout;
 	private RootWindowController root;
 	private CatalogController catalog;
+	private ItemBrowserController itemBrowser;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -33,6 +36,7 @@ public class MainApp extends Application {
 		this.primaryStage.setTitle(PropertiesHandler.getInstance().getAppTitleProp());
 		initRootWindowLayout();
 		initCatalogLayout();
+		initItemBrowserLayout();
 		root.setRightSidePane(catalogLayout);
 		this.primaryStage.show();
 	}
@@ -55,7 +59,7 @@ public class MainApp extends Application {
 	private void initCatalogLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getCatalogviewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getCatalogViewProp()));
 			catalogLayout = (AnchorPane)fxml.load();
 			catalog = fxml.getController();
 			catalog.setMainApp(this);
@@ -63,8 +67,23 @@ public class MainApp extends Application {
 			e.printStackTrace();
 		}
 	}
+	private void initItemBrowserLayout() {
+		try {
+			FXMLLoader fxml = new FXMLLoader();
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getItembrowserViewProp()));
+			itemBrowserLayout = (AnchorPane)fxml.load();
+			itemBrowser = fxml.getController();
+			itemBrowser.setMainApp(this);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	public void changeCategory(int category) {
 		catalog.updateCatalogWithNewCategory(category);
+	}
+	public void openItemBrowser(String url) {
+		itemBrowser.loadNewItemInBrowser(url);
+		root.setRightSidePane(itemBrowserLayout);
 	}
 
 	public static void main(String[] args) {
