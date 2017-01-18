@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="587.0" prefWidth="552.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="587.0" prefWidth="552.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController">
    <children>
       <TabPane prefHeight="587.0" prefWidth="552.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <tabs>
@@ -17,7 +17,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GridPane prefHeight="535.0" prefWidth="531.0">
+                        <GridPane prefHeight="535.0" prefWidth="531.0" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                           <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="263.0" minWidth="10.0" prefWidth="250.0" />
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="263.0" minWidth="10.0" prefWidth="110.0" />
@@ -36,7 +36,7 @@
                               <RowConstraints maxHeight="348.0" minHeight="10.0" prefHeight="193.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <ImageView fitHeight="280.0" fitWidth="221.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="TOP" />
+                              <ImageView fx:id="posterImage" fitHeight="280.0" fitWidth="198.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="TOP" />
                               <Label alignment="TOP_LEFT" prefHeight="243.0" prefWidth="484.0" text="Сюжет:" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="TOP" />
                               <Label alignment="TOP_LEFT" prefHeight="42.0" prefWidth="278.0" text="Жанр:" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
                               <Label alignment="TOP_LEFT" prefHeight="61.0" prefWidth="110.0" text="Год:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -45,14 +45,15 @@
                               <Label alignment="TOP_LEFT" prefHeight="67.0" prefWidth="110.0" text="Перевод:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                               <Label alignment="TOP_LEFT" prefHeight="63.0" prefWidth="110.0" text="Длительность:" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                               <Label alignment="TOP_LEFT" prefHeight="98.0" prefWidth="110.0" text="В ролях:" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                              <Label alignment="TOP_LEFT" prefHeight="58.0" prefWidth="171.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <Label alignment="TOP_LEFT" prefHeight="68.0" prefWidth="171.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <Label alignment="TOP_LEFT" prefHeight="45.0" prefWidth="321.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                              <Label alignment="TOP_LEFT" prefHeight="45.0" prefWidth="336.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                              <Label alignment="TOP_LEFT" prefHeight="46.0" prefWidth="397.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                              <Label alignment="TOP_LEFT" prefHeight="46.0" prefWidth="501.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                              <Label alignment="TOP_LEFT" prefHeight="67.0" prefWidth="370.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-                              <Label alignment="TOP_LEFT" prefHeight="152.0" prefWidth="531.0" text="Текст" wrapText="true" GridPane.columnSpan="3" GridPane.rowIndex="9" />
+                              <Label fx:id="genreLabel" alignment="TOP_LEFT" prefHeight="36.0" prefWidth="213.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <Label fx:id="yearLabel" alignment="TOP_LEFT" prefHeight="68.0" prefWidth="171.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <Label fx:id="countryLabel" alignment="TOP_LEFT" prefHeight="45.0" prefWidth="321.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <Label fx:id="directorLabel" alignment="TOP_LEFT" prefHeight="45.0" prefWidth="336.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                              <Label fx:id="translationLabel" alignment="TOP_LEFT" prefHeight="46.0" prefWidth="397.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                              <Label fx:id="durationLabel" alignment="TOP_LEFT" prefHeight="46.0" prefWidth="501.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                              <Label fx:id="castLabel" alignment="TOP_LEFT" prefHeight="67.0" prefWidth="370.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+                              <Label fx:id="plotLabel" alignment="TOP_LEFT" prefHeight="152.0" prefWidth="531.0" text="Текст" wrapText="true" GridPane.columnSpan="3" GridPane.rowIndex="9" />
+                              <Label fx:id="titleLabel" alignment="CENTER" prefHeight="61.0" prefWidth="335.0" text="Текст" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="2" />
                            </children>
                         </GridPane>
                      </children></AnchorPane>

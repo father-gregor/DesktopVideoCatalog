@@ -106,6 +106,7 @@ public class CatalogController {
 		public void handle(MouseEvent me) {
 			System.out.println("Clicked");
 			System.out.println( ((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getTitle() );
+			mainApp.openItemBrowser(((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getUrl());
 		}
 	}
 }
