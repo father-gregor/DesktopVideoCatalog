@@ -51,6 +51,7 @@ public class TreeTvParser implements Parser {
 			sb.append(line);
 		return sb.toString();
 	}
+	
 	@Override
 	public List<SimpleVideoItem> getVideoItemsByCategory(int category, int page) {
 		List<SimpleVideoItem> itemsList = new ArrayList<>();
@@ -78,20 +79,6 @@ public class TreeTvParser implements Parser {
 		return itemsList;
 	}
 	@Override
-	public BrowserVideoItem getVideoItemByUrl(String url) {
-		BrowserVideoItem videoItem = null;
-		try {
-			String html = getHtmlContent(url);
-			Document content = Jsoup.parse(html);
-			videoItem = createBrowserVideoItemFromHtml(content.select("div.item").first());
-		} catch(ClientProtocolException e) {
-			e.printStackTrace();
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		return videoItem;
-	}
-	@Override
 	public SimpleVideoItem createCatalogVideoItemFromHtml(Element el) {
 		SimpleVideoItem item = new SimpleVideoItem();
 		item.setTitle(el.select("h2").first().text());
@@ -107,10 +94,27 @@ public class TreeTvParser implements Parser {
 		item.setId(ID_SAMPLE);
 		return item;
 	}
+	
+	@Override
+	public BrowserVideoItem getVideoItemByUrl(String url) {
+		BrowserVideoItem item = null;
+		try {
+			System.out.println(url);
+			String html = getHtmlContent(url);
+			Document content = Jsoup.parse(html);
+			item = createBrowserVideoItemFromHtml(content.select("div.item").first());
+		} catch(ClientProtocolException e) {
+			e.printStackTrace();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return item;
+	}
 	@Override
 	public BrowserVideoItem createBrowserVideoItemFromHtml(Element el) {
 		BrowserVideoItem item = new BrowserVideoItem();
 		item.setTitle(el.select("h1#film_object_name").text());
+		item.setPrevImg(el.select("img#preview_img").attr("src"));
 		List<String> list = new ArrayList<>();
 		for(Element elem: el.select("a[data-rel='janrs[]']"))
 			list.add(elem.text());
@@ -123,7 +127,9 @@ public class TreeTvParser implements Parser {
 		list = new ArrayList<>();
 		for(Element elem: el.select("div.actors_content"))
 			list.add(elem.text());
+		item.setCast(list);
 		item.setPlot(el.select("div.description").text());
+		System.out.println("BROWSER OBJECT: " + item.getCountry() + "\n" + item.getDirector() + "\n" + item.getYear());
 		return item;
 	}
 
