@@ -26,7 +26,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.benlinus92.dskvideocatalog.AppConstants;
-import com.benlinus92.dskvideocatalog.model.VideoItem;
+import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
+import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 
 public class TreeTvParser implements Parser {
 	private final static String TREE_TV_FILMS_URL = "http://tree.tv/films/sortType/new/page/";
@@ -51,8 +52,8 @@ public class TreeTvParser implements Parser {
 		return sb.toString();
 	}
 	@Override
-	public List<VideoItem> getVideoItemsByCategory(int category, int page) {
-		List<VideoItem> itemsList = new ArrayList<>();
+	public List<SimpleVideoItem> getVideoItemsByCategory(int category, int page) {
+		List<SimpleVideoItem> itemsList = new ArrayList<>();
 		try {
 			String url = "";
 			if(category == AppConstants.CATEGORY_FILMS)
@@ -64,10 +65,10 @@ public class TreeTvParser implements Parser {
 			else
 				url = TREE_TV_FILMS_URL;
 			String html = getHtmlContent(url + Integer.toString(page));
-			Document content = Jsoup.parse(html.toString());
+			Document content = Jsoup.parse(html);
 			Elements elems = content.select("div.item");
 			for(Element elem: elems) {
-				itemsList.add(createVideoItemFromHtml(elem));
+				itemsList.add(createCatalogVideoItemFromHtml(elem));
 			}
 		} catch(ClientProtocolException e) {
 			e.printStackTrace();
@@ -77,11 +78,24 @@ public class TreeTvParser implements Parser {
 		return itemsList;
 	}
 	@Override
-	public VideoItem createVideoItemFromHtml(Element el) {
-		VideoItem item = new VideoItem();
-		Element tempElem = el.select("h2").first();
-		item.setTitle(tempElem.text());
-		item.setUrl(TREE_TV_BASIC_URL + tempElem.select("a").attr("href"));
+	public BrowserVideoItem getVideoItemByUrl(String url) {
+		BrowserVideoItem videoItem = null;
+		try {
+			String html = getHtmlContent(url);
+			Document content = Jsoup.parse(html);
+			videoItem = createBrowserVideoItemFromHtml(content.select("div.item").first());
+		} catch(ClientProtocolException e) {
+			e.printStackTrace();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return videoItem;
+	}
+	@Override
+	public SimpleVideoItem createCatalogVideoItemFromHtml(Element el) {
+		SimpleVideoItem item = new SimpleVideoItem();
+		item.setTitle(el.select("h2").first().text());
+		item.setUrl(TREE_TV_BASIC_URL + el.select("h2").first().select("a").attr("href"));
 		for(Element elem: el.select("img")) {
 			if(elem.attr("title").length() > 0) {
 				item.setPrevImg(elem.attr("src"));
@@ -91,6 +105,25 @@ public class TreeTvParser implements Parser {
 		item.setYear(el.select("div.smoll_year").text());
 		item.setAddedDate(LocalDate.parse(el.select("div.date_create span").text(), DATE_FORMAT));
 		item.setId(ID_SAMPLE);
+		return item;
+	}
+	@Override
+	public BrowserVideoItem createBrowserVideoItemFromHtml(Element el) {
+		BrowserVideoItem item = new BrowserVideoItem();
+		item.setTitle(el.select("h1#film_object_name").text());
+		List<String> list = new ArrayList<>();
+		for(Element elem: el.select("a[data-rel='janrs[]']"))
+			list.add(elem.text());
+		item.setGenre(list);
+		item.setYear(el.select("div.list_year a").text());
+		item.setCountry(el.select("span.item").text());
+		item.setDirector(el.select("span.regiser_item").text());
+		item.setTranslation(el.select("div.section_item:contains(Перевод:)").select("span:not(.main)").text());
+		item.setDuration(el.select("div.section_item:contains(Длительность:)").select("span:not(.main)").text());
+		list = new ArrayList<>();
+		for(Element elem: el.select("div.actors_content"))
+			list.add(elem.text());
+		item.setPlot(el.select("div.description").text());
 		return item;
 	}
 

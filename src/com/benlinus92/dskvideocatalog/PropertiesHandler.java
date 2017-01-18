@@ -13,6 +13,7 @@ public class PropertiesHandler {
 	private String fileLocale = "locale/MenuUnits";
 	private String rootWindowViewProp = "";
 	private String catalogviewProp = "";
+	private String itembrowserProp = "";
 	private ResourceBundle appUnitsBundle;
 	
 	public static PropertiesHandler getInstance() {
@@ -27,8 +28,9 @@ public class PropertiesHandler {
 			input = this.getClass().getClassLoader().getResourceAsStream(fileAppProp);
 			if(input != null) {
 				prop.load(input);
-				rootWindowViewProp = prop.getProperty("rootwindowview");
-				catalogviewProp = prop.getProperty("catalogview");
+				rootWindowViewProp = prop.getProperty("view.rootwindow");
+				catalogviewProp = prop.getProperty("view.catalog");
+				itembrowserProp = prop.getProperty("view.itembrowser");
 				Locale locale = new Locale(prop.getProperty("locale.lang"), prop.getProperty("locale.country"));
 				appUnitsBundle = ResourceBundle.getBundle(fileLocale, locale);
 			}
@@ -54,6 +56,9 @@ public class PropertiesHandler {
 	}
 	public String getCatalogviewProp() {
 		return catalogviewProp;
+	}
+	public String getItemBrowserProp() {
+		return itembrowserProp;
 	}
 	public String getFilmsUnitName() {
 		return appUnitsBundle.getString("unit.films");
