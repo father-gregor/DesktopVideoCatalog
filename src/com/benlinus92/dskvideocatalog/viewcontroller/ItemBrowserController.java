@@ -1,5 +1,11 @@
 package com.benlinus92.dskvideocatalog.viewcontroller;
 
+import java.io.IOException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+
 import com.benlinus92.dskvideocatalog.MainApp;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
@@ -13,7 +19,6 @@ import javafx.scene.image.ImageView;
 public class ItemBrowserController {
 
 	private MainApp mainApp;
-	private Parser parser;
 	private String currentItemUrl;
 	@FXML private ImageView posterImage;
 	@FXML private Label titleLabel;
@@ -27,10 +32,10 @@ public class ItemBrowserController {
 	@FXML private Label plotLabel;
 	
 	@FXML public void initialize() {
-		parser = new TreeTvParser();
+		
 	}
 	public void updateItemBrowser() {
-		BrowserVideoItem item = parser.getVideoItemByUrl(currentItemUrl);
+		BrowserVideoItem item = mainApp.getCurrentParser().getVideoItemByUrl(currentItemUrl);
 		try {
 			String temp = "";
 			int ind = 0;
@@ -40,6 +45,7 @@ public class ItemBrowserController {
 					temp = temp + ", ";
 				ind++;
 			}
+			genreLabel.setText(temp);
 			temp = "";
 			ind = 0;
 			for(String actor: item.getCast()) {
@@ -48,16 +54,17 @@ public class ItemBrowserController {
 					temp = temp + ", ";
 				ind++;
 			}
-			System.out.println(item.getPrevImg());
-			posterImage.setImage(new Image(item.getPrevImg()));
+			castLabel.setText(temp);
+			Image image = new Image(item.getPrevImg());
+			if(image.isError())
+				image = downloadImageWithHttpClient(item.getPrevImg());
+			posterImage.setImage(image);
 			titleLabel.setText(item.getTitle());
-			genreLabel.setText(temp);
 			yearLabel.setText(item.getYear());
 			countryLabel.setText(item.getCountry());
 			directorLabel.setText(item.getDirector());
 			translationLabel.setText(item.getTranslation());
 			durationLabel.setText(item.getDuration());
-			castLabel.setText(temp);
 			plotLabel.setText(item.getPlot());
 		} catch(IllegalArgumentException e) {
 			e.printStackTrace();
@@ -66,6 +73,18 @@ public class ItemBrowserController {
 	public void loadNewItemInBrowser(String url) {
 		setCurrentItemUrl(url);
 		updateItemBrowser();
+	}
+	private Image downloadImageWithHttpClient(String url) {
+		Image image = null;
+		try {
+			HttpEntity entity = HttpClientBuilder.create().build().execute(new HttpGet(url)).getEntity();
+			if(entity != null) {
+				image = new Image(entity.getContent());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return image;
 	}
 	public void setCurrentItemUrl(String url) {
 		this.currentItemUrl = url;
