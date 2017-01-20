@@ -29,9 +29,13 @@ public class MainApp extends Application {
 	private RootWindowController root;
 	private CatalogController catalog;
 	private ItemBrowserController itemBrowser;
+	private Runtime runtime = Runtime.getRuntime();
+	private Parser currentParser;
 	
 	@Override
 	public void start(Stage primaryStage) {
+		System.out.println("2");
+		currentParser = new TreeTvParser();
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle(PropertiesHandler.getInstance().getAppTitleProp());
 		initRootWindowLayout();
@@ -63,6 +67,7 @@ public class MainApp extends Application {
 			catalogLayout = (AnchorPane)fxml.load();
 			catalog = fxml.getController();
 			catalog.setMainApp(this);
+			catalog.updateCatalog();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -93,7 +98,19 @@ public class MainApp extends Application {
 	public Stage getPrimaryStage() {
 		return this.primaryStage;
 	}
+	public Pane getCatalogPane() {
+		return this.catalogLayout;
+	}
 	public CatalogController getCatalogController() {
 		return this.catalog;
+	}
+	public Runtime getRuntime() {
+		return this.runtime;
+	}
+	public Parser getCurrentParser() {
+		return this.currentParser;
+	}
+	public void setCurrentParser(Parser parser) {
+		this.currentParser = parser;
 	}
 }
