@@ -16,11 +16,11 @@
                      <children>
                         <Accordion fx:id="webSitesSectionPane">
                           <panes>
-                            <TitledPane animated="false" contentDisplay="TOP" text="Tree.Tv">
+                            <TitledPane fx:id="treeTvPane" animated="false" contentDisplay="TOP" text="Tree.Tv">
                                  <content>
                                     <VBox alignment="TOP_CENTER" prefHeight="93.0" prefWidth="189.0" />
                                  </content></TitledPane>
-                            <TitledPane animated="false" text="untitled 2" />
+                            <TitledPane fx:id="exfsPane" animated="false" text="EX-FS.net" />
                           </panes>
                         </Accordion>
                      </children>
