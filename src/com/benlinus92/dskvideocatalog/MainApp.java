@@ -1,6 +1,8 @@
 package com.benlinus92.dskvideocatalog;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
@@ -9,12 +11,15 @@ import com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController;
 import com.benlinus92.dskvideocatalog.viewcontroller.RootWindowController;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -31,17 +36,18 @@ public class MainApp extends Application {
 	private ItemBrowserController itemBrowser;
 	private Runtime runtime = Runtime.getRuntime();
 	private Parser currentParser;
+	private List<Pane> savedPanesList = new ArrayList<>();
+	private CatalogStateHandler currentState = new CatalogStateHandler();
 	
 	@Override
 	public void start(Stage primaryStage) {
-		System.out.println("2");
 		currentParser = new TreeTvParser();
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle(PropertiesHandler.getInstance().getAppTitleProp());
 		initRootWindowLayout();
 		initCatalogLayout();
 		initItemBrowserLayout();
-		root.setRightSidePane(catalogLayout);
+		root.initRightSidePane(catalogLayout);
 		this.primaryStage.show();
 	}
 	private void initRootWindowLayout() {
@@ -56,6 +62,7 @@ public class MainApp extends Application {
 			primaryStage.setMaxWidth(1500.0);
 			primaryStage.setMinHeight(600.0);
 			primaryStage.setMinWidth(750.0);
+			primaryStage.setOnCloseRequest(e -> Platform.exit());
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -67,7 +74,8 @@ public class MainApp extends Application {
 			catalogLayout = (AnchorPane)fxml.load();
 			catalog = fxml.getController();
 			catalog.setMainApp(this);
-			catalog.updateCatalog();
+			catalog.startUpdateCatalogThread();
+			//catalog.updateCatalog();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -83,10 +91,36 @@ public class MainApp extends Application {
 			e.printStackTrace();
 		}
 	}
+	public void initImageViewerWindow(Image image) {
+		try {
+			FXMLLoader fxml = new FXMLLoader();
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getImageViewerWindowProp()));
+			AnchorPane imageWindow = (AnchorPane) fxml.load();
+			imageWindow.getChildren().add(new ImageView(image));
+			imageWindow.setOnScroll(e -> {
+                double zoomFactor = 1.15;
+                double deltaY = e.getDeltaY();
+                if (deltaY < 0){
+                  zoomFactor = 2.0 - zoomFactor;
+                }
+                AnchorPane pane = (AnchorPane)e.getSource();
+                pane.setScaleX(pane.getScaleX() * zoomFactor);
+                pane.setScaleY(pane.getScaleY() * zoomFactor);
+                e.consume();
+			});
+			Stage secondStage = new Stage();
+			secondStage.setScene(new Scene(imageWindow));
+			secondStage.setTitle("Image");
+			secondStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	public void changeCategory(int category) {
 		catalog.updateCatalogWithNewCategory(category);
 	}
 	public void openItemBrowser(String url) {
+		currentState.setCatalogState(catalog.getCurrentCategory(), currentParser, catalogLayout);
 		itemBrowser.loadNewItemInBrowser(url);
 		root.setRightSidePane(itemBrowserLayout);
 	}
@@ -112,5 +146,20 @@ public class MainApp extends Application {
 	}
 	public void setCurrentParser(Parser parser) {
 		this.currentParser = parser;
+	}
+	public void addPaneToSavedStateList(Pane state) {
+		this.savedPanesList.add(state);
+	}
+	public void removePaneFromSavedStateList() {
+		this.savedPanesList.remove(this.savedPanesList.size() - 1);
+	}
+	public Pane getLastSavedPane() {
+		return this.savedPanesList.get(this.savedPanesList.size() - 1);
+	}
+	public int getSavedStateListSize() {
+		return this.savedPanesList.size();
+	}
+	public CatalogStateHandler getCurrentState() {
+		return currentState;
 	}
 }
