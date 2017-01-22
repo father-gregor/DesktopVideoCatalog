@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 public class ItemBrowserController {
 
@@ -59,6 +60,9 @@ public class ItemBrowserController {
 			if(image.isError())
 				image = downloadImageWithHttpClient(item.getPrevImg());
 			posterImage.setImage(image);
+			posterImage.setOnMouseClicked((MouseEvent e) -> {
+				mainApp.initImageViewerWindow(((ImageView)e.getSource()).getImage());
+			});
 			titleLabel.setText(item.getTitle());
 			yearLabel.setText(item.getYear());
 			countryLabel.setText(item.getCountry());

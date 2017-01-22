@@ -56,7 +56,7 @@ public class ExFsParser implements Parser {
 				url = EXFS_SERIES_URL;
 			else if(category == AppConstants.CATEGORY_CARTOONS)
 				url = EXFS_CARTOONS_URL;
-			String html = getHtmlContent(url + Integer.toString(page));
+			String html = getHtmlContent(url + Integer.toString(page) + "/");
 			Document content = Jsoup.parse(html);
 			for(Element elem: content.select("div.MiniPostAllForm")) {
 				itemsList.add(createCatalogVideoItemFromHtml(elem));

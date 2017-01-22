@@ -18,6 +18,7 @@ import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -41,9 +42,10 @@ public class CatalogController {
 	private GridPane gridSample;
 	@FXML
 	private ScrollPane scrollCatalogPane;
+	private ChangeListener<Number> scrollMaxEvent;
 	private int currentCategory = AppConstants.CATEGORY_FILMS;
 	private int currentPage = 1;
-	private ChangeListener<Number> scrollMaxEvent;
+	private Thread backgroundThread = null;
 	
 	public CatalogController() {
 		
@@ -51,13 +53,12 @@ public class CatalogController {
 	
 	@FXML
 	private void initialize() {
-		System.out.println("1");
+		backgroundThread = new Thread();
 		scrollMaxEvent = (ObservableValue<? extends Number> ov, Number oldV, Number newV) -> {
-			if(newV.doubleValue() >= (scrollCatalogPane.getVmax() - 0.05)) {
+			if(newV.doubleValue() >= (scrollCatalogPane.getVmax() - 0.2)) {
 				System.out.println(scrollCatalogPane.getVmax());
 				scrollCatalogPane.vvalueProperty().removeListener(scrollMaxEvent);
-				updateCatalog();
-				scrollCatalogPane.vvalueProperty().addListener(scrollMaxEvent);;
+				startUpdateCatalogThread();
 			}
 		};
 		scrollCatalogPane.vvalueProperty().addListener(scrollMaxEvent);
@@ -69,22 +70,36 @@ public class CatalogController {
 	public void setMainApp(MainApp app) {
 		this.mainApp = app;
 	}
-	public void updateCatalog() {
-		List<SimpleVideoItem> items = mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage);
-		List<GridPane> gridItemsList = new ArrayList<>();
-		long start = System.nanoTime();
-		for(SimpleVideoItem itemObj: items) {
-			gridItemsList.add(createGridForVideoItem(itemObj));
+	public void startUpdateCatalogThread() {
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				List<SimpleVideoItem> items = mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage);
+				List<GridPane> gridItemsList = new ArrayList<>();
+				for(SimpleVideoItem itemObj: items) {
+					gridItemsList.add(createGridForVideoItem(itemObj));
+				}
+				currentPage++;
+				System.out.println(currentPage);
+				Platform.runLater(new Runnable() {	
+					@Override
+					public void run() {
+						mainTilePane.getChildren().addAll(gridItemsList);
+						scrollCatalogPane.vvalueProperty().addListener(scrollMaxEvent);
+					}
+				});
+			}
+		};
+		if(!backgroundThread.isAlive()) {
+			backgroundThread = new Thread(task);
+			backgroundThread.setDaemon(true);
+			backgroundThread.start();
 		}
-		System.out.println("TIME: " + Double.toString((System.nanoTime() - start)/1000000000.0));
-		currentPage++;
-		mainTilePane.getChildren().addAll(gridItemsList);
-		System.out.println(Double.toString((System.nanoTime() - start)/1000000000.0));
 	}
 	public void updateCatalogWithNewCategory(int category) {
 		setCurrentCategory(category);
 		mainTilePane.getChildren().clear();
-		updateCatalog();
+		startUpdateCatalogThread();
 	}
 	private GridPane createGridForVideoItem(SimpleVideoItem itemObj) {
 		GridPane videoItemPane = new GridPane();
@@ -113,6 +128,9 @@ public class CatalogController {
 	public void setCurrentCategory(int category) {
 		this.currentPage = 1;
 		this.currentCategory = category;
+	}
+	public int getCurrentCategory() {
+		return currentCategory;
 	}
 	private Image downloadImageWithHttpClient(String url) {
 		Image image = null;
