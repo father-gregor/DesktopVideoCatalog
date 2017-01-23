@@ -28,6 +28,8 @@ import org.jsoup.select.Elements;
 import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
+import com.benlinus92.dskvideocatalog.model.VideoLink;
+import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 
 public class TreeTvParser implements Parser {
 	private final static String TREE_TV_FILMS_URL = "http://tree.tv/films/sortType/new/page/";
@@ -98,7 +100,7 @@ public class TreeTvParser implements Parser {
 		try {
 			String html = getHtmlContent(url);
 			Document content = Jsoup.parse(html);
-			item = createBrowserVideoItemFromHtml(content.select("div.item").first());
+			item = createBrowserVideoItemFromHtml(content.select("div.main_bg").first());
 		} catch(ClientProtocolException e) {
 			e.printStackTrace();
 		} catch(IOException e) {
@@ -125,6 +127,21 @@ public class TreeTvParser implements Parser {
 			list.add(elem.text());
 		item.setCast(list);
 		item.setPlot(el.select("div.description").text());
+		
+		int transItemsSize = el.select("div.accordion div.accordion_item").size();
+		List<VideoTranslationType> typeList = new ArrayList<>();
+		for(int i = 0; i < transItemsSize; i++) {
+			VideoTranslationType newItem = new VideoTranslationType();
+			newItem.setType(el.select("div.accordion_head").get(i).select("a").attr("title"));
+			for(Element e: el.select("div.accordion_content").get(i).select("div.accordion_content_item")) {
+				VideoLink newLink = new VideoLink();
+				newLink.setName(e.select("div.film_title a").text());
+				newLink.setLink(TREE_TV_BASIC_URL + e.select("div.film_title a").attr("data-href"));
+				newItem.addVideoLink(newLink);
+			}
+			typeList.add(newItem);
+		}
+		item.setVideoTransTypeList(typeList);
 		return item;
 	}
 
