@@ -15,6 +15,7 @@ public class BrowserVideoItem extends SimpleVideoItem {
 	private StringProperty duration = new SimpleStringProperty("");
 	private ObjectProperty<List<String>> cast = new SimpleObjectProperty<>();
 	private StringProperty plot = new SimpleStringProperty("");
+	private ObjectProperty<List<VideoTranslationType>> videosTransTypeList = new SimpleObjectProperty<>();
 	
 	public List<String> getGenre() {
 		return genre.get();
@@ -78,5 +79,14 @@ public class BrowserVideoItem extends SimpleVideoItem {
 	}
 	public void setPlot(String plot) {
 		this.plot.set(plot);
+	}
+	public List<VideoTranslationType> getVideoTransTypeList() {
+		return videosTransTypeList.get();
+	}
+	public ObjectProperty<List<VideoTranslationType>> videoTransTypeListProperty() {
+		return videosTransTypeList;
+	}
+	public void setVideoTransTypeList(List<VideoTranslationType> videoList) {
+		this.videosTransTypeList.set(videoList);
 	}
 }
