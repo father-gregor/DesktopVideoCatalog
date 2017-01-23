@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.image.ImageView?>
@@ -11,7 +12,7 @@
 
 <AnchorPane prefHeight="587.0" prefWidth="552.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController">
    <children>
-      <TabPane prefHeight="587.0" prefWidth="552.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <TabPane fx:id="tabPane" prefHeight="587.0" prefWidth="552.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <tabs>
           <Tab text="Описание">
             <content>
@@ -60,9 +61,9 @@
             </content>
           </Tab>
           <Tab text="Ссылки">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
+               <content>
+                  <ScrollPane fx:id="linksPane" prefHeight="200.0" prefWidth="200.0" />
+               </content>
           </Tab>
         </tabs>
       </TabPane>

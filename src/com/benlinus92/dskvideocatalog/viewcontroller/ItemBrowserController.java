@@ -1,6 +1,7 @@
 package com.benlinus92.dskvideocatalog.viewcontroller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -8,19 +9,30 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.benlinus92.dskvideocatalog.MainApp;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
+import com.benlinus92.dskvideocatalog.model.VideoLink;
+import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 
 public class ItemBrowserController {
 
 	private MainApp mainApp;
 	private String currentItemUrl;
+	@FXML private TabPane tabPane;
+	@FXML private ScrollPane linksPane;
 	@FXML private ImageView posterImage;
 	@FXML private Label titleLabel;
 	@FXML private Label genreLabel;
@@ -70,11 +82,21 @@ public class ItemBrowserController {
 			translationLabel.setText(item.getTranslation());
 			durationLabel.setText(item.getDuration());
 			plotLabel.setText(item.getPlot());
+			VBox vbox = new VBox();
+			for(VideoTranslationType typeItem: item.getVideoTransTypeList()) {
+				BorderPane typePane = new BorderPane();
+				typePane.setLeft(new Label(typeItem.getType()));
+				typePane.setUserData(typeItem.getVideosList());
+				typePane.setOnMouseClicked(new VideoTypeLinksOpenedEventHandler());
+				vbox.getChildren().add(typePane);
+			}
+			linksPane.setContent(vbox);
 		} catch(IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 	}
 	public void loadNewItemInBrowser(String url) {
+		tabPane.getSelectionModel().select(0);//select first tab always
 		setCurrentItemUrl(url);
 		updateItemBrowser();
 	}
@@ -95,5 +117,33 @@ public class ItemBrowserController {
 	}
 	public void setMainApp(MainApp app) {
 		this.mainApp = app;
+	}
+	private class VideoTypeLinksOpenedEventHandler implements EventHandler<MouseEvent> {
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handle(MouseEvent me) {
+			BorderPane videoLink = (BorderPane)me.getSource();
+			videoLink.removeEventHandler(MouseEvent.MOUSE_CLICKED, videoLink.getOnMouseClicked());
+			int videoLinkIndex = ((VBox)videoLink.getParent()).getChildren().indexOf(videoLink);
+			VBox linksVBox = new VBox();
+			for(VideoLink link: (List<VideoLink>)videoLink.getUserData()) {
+				BorderPane linkPane = new BorderPane();
+				linkPane.setLeft(new Label(link.getVideoName()));
+				linkPane.setRight(new Hyperlink(link.getLink()));
+				linksVBox.getChildren().add(linkPane);
+			}
+			videoLink.setOnMouseClicked(new VideoTypeLinksClosedEventHandler());
+			((VBox)videoLink.getParent()).getChildren().add(videoLinkIndex + 1, linksVBox);
+		}
+	}
+	private class VideoTypeLinksClosedEventHandler implements EventHandler<MouseEvent> {
+		@Override
+		public void handle(MouseEvent me) {
+			BorderPane videoLink = (BorderPane)me.getSource();
+			videoLink.removeEventHandler(MouseEvent.MOUSE_CLICKED, videoLink.getOnMouseClicked());
+			int videoLinkIndex = ((VBox)videoLink.getParent()).getChildren().indexOf(videoLink);
+			((VBox)videoLink.getParent()).getChildren().remove(videoLinkIndex + 1); //remove next element in VBox, which is expanded 'links list'
+			videoLink.setOnMouseClicked(new VideoTypeLinksOpenedEventHandler());
+		}
 	}
 }
