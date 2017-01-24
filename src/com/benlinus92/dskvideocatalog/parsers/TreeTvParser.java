@@ -31,6 +31,7 @@ import org.jsoup.select.Elements;
 
 import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
+import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
 import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
@@ -42,6 +43,13 @@ public class TreeTvParser implements Parser {
 	private final static String TREE_TV_BASIC_URL = "http://tree.tv";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private final static String ID_SAMPLE = "TREE_TV_";
+	private List<MediaStream> mediaStreamsList;
+	
+	public TreeTvParser() {
+		mediaStreamsList = new ArrayList<>();
+		mediaStreamsList.add(MediaStream.MP4);
+		mediaStreamsList.add(MediaStream.HLS_STREAM);
+	}
 	
 	@Override
 	public String getHtmlContent(String url) throws IOException, ClientProtocolException {
@@ -173,6 +181,11 @@ public class TreeTvParser implements Parser {
 		}
 		item.setVideoTransTypeList(typeList);
 		return item;
+	}
+
+	@Override
+	public List<MediaStream> getMediaStreamsList() {
+		return mediaStreamsList;
 	}
 
 }

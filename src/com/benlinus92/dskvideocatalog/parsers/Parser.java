@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
+import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 
 public interface Parser {
@@ -16,4 +17,5 @@ public interface Parser {
 	public BrowserVideoItem getVideoItemByUrl(String url);
 	public SimpleVideoItem createCatalogVideoItemFromHtml(Element el);
 	public BrowserVideoItem createBrowserVideoItemFromHtml(Element el);
+	public List<MediaStream> getMediaStreamsList();
 }

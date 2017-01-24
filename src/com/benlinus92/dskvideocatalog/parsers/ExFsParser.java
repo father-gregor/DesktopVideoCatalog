@@ -20,6 +20,7 @@ import org.jsoup.select.Elements;
 
 import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
+import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 
 public class ExFsParser implements Parser {
@@ -29,6 +30,12 @@ public class ExFsParser implements Parser {
 	private final static String EXFS_BASIC_URL = "http://ex-fs.net";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.MM.yyyy");
 	private final static String ID_SAMPLE = "EX_FS_";
+	private List<MediaStream> mediaStreamsList;
+	
+	public ExFsParser() {
+		mediaStreamsList = new ArrayList<>();
+		mediaStreamsList.add(MediaStream.M3U8);
+	}
 
 	@Override
 	public String getHtmlContent(String url) throws IOException {
@@ -125,6 +132,11 @@ public class ExFsParser implements Parser {
 				break;
 			}
 		return item;
+	}
+
+	@Override
+	public List<MediaStream> getMediaStreamsList() {
+		return mediaStreamsList;
 	}
 
 }
