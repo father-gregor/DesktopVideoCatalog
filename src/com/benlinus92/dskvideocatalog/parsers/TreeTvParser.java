@@ -3,6 +3,7 @@ package com.benlinus92.dskvideocatalog.parsers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.time.LocalDate;
@@ -18,8 +19,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -93,13 +97,38 @@ public class TreeTvParser implements Parser {
 		item.setId(ID_SAMPLE);
 		return item;
 	}
-	
+	private void testLinkParser() {
+		try {
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpPost request = new HttpPost(TREE_TV_BASIC_URL + "/film/index/link");
+			request.addHeader("Referer", "http://tree.tv/film/23050-fantasticheskie-tvari-i-gde-oni-obitayut");
+			request.addHeader("User-agent", AppConstants.USER_AGENT);
+			request.addHeader("X-Requested-With:", "XMLHttpRequest");
+			request.addHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+			request.addHeader("Host", "tree.tv");
+			request.addHeader("Origin", "http://tree.tv");
+			//request.addHeader("Cookie", "");
+			List<BasicNameValuePair> list = new ArrayList<>();
+			list.add(new BasicNameValuePair("quality", "480"));
+			list.add(new BasicNameValuePair("file", "172171"));
+			request.setEntity(new UrlEncodedFormEntity(list));
+			HttpResponse response = client.execute(request);
+			System.out.println("GET LINK: " + response.getStatusLine().getStatusCode());
+			BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+			String line = null;
+			while((line = br.readLine()) != null)
+				System.out.println(line);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public BrowserVideoItem getVideoItemByUrl(String url) {
 		BrowserVideoItem item = null;
 		try {
 			String html = getHtmlContent(url);
 			Document content = Jsoup.parse(html);
+			testLinkParser();
 			item = createBrowserVideoItemFromHtml(content.select("div.main_bg").first());
 		} catch(ClientProtocolException e) {
 			e.printStackTrace();
@@ -137,6 +166,7 @@ public class TreeTvParser implements Parser {
 				VideoLink newLink = new VideoLink();
 				newLink.setName(e.select("div.film_title a").text());
 				newLink.setLink(TREE_TV_BASIC_URL + e.select("div.film_title a").attr("data-href"));
+				newLink.setId(Jsoup.parse(e.outerHtml()).select("div.accordion_content_item").attr("data-file_id"));
 				newItem.addVideoLink(newLink);
 			}
 			typeList.add(newItem);

@@ -1,8 +1,15 @@
 package com.benlinus92.dskvideocatalog.model;
 
 public class VideoLink {
+	private String id = "";
 	private String videoName = "";
 	private String link = "";
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	public String getVideoName() {
 		return videoName;
 	}
