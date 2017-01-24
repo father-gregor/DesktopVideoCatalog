@@ -1,5 +1,6 @@
 package com.benlinus92.dskvideocatalog.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.beans.property.ObjectProperty;
@@ -15,7 +16,7 @@ public class BrowserVideoItem extends SimpleVideoItem {
 	private StringProperty duration = new SimpleStringProperty("");
 	private ObjectProperty<List<String>> cast = new SimpleObjectProperty<>();
 	private StringProperty plot = new SimpleStringProperty("");
-	private ObjectProperty<List<VideoTranslationType>> videosTransTypeList = new SimpleObjectProperty<>();
+	private ObjectProperty<List<VideoTranslationType>> videosTransTypeList = new SimpleObjectProperty<>(new ArrayList<>());
 	
 	public List<String> getGenre() {
 		return genre.get();

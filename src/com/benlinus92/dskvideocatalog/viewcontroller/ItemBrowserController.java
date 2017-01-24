@@ -47,7 +47,7 @@ public class ItemBrowserController {
 	@FXML public void initialize() {
 		
 	}
-	public void updateItemBrowser() {
+	private void updateItemBrowser() {
 		BrowserVideoItem item = mainApp.getCurrentParser().getVideoItemByUrl(currentItemUrl);
 		try {
 			String temp = "";
@@ -72,7 +72,7 @@ public class ItemBrowserController {
 			if(image.isError())
 				image = downloadImageWithHttpClient(item.getPrevImg());
 			posterImage.setImage(image);
-			posterImage.setOnMouseClicked((MouseEvent e) -> {
+			posterImage.setOnMouseClicked(e -> {
 				mainApp.initImageViewerWindow(((ImageView)e.getSource()).getImage());
 			});
 			titleLabel.setText(item.getTitle());

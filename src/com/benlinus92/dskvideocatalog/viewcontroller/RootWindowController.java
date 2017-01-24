@@ -65,12 +65,11 @@ public class RootWindowController {
 			label.setId(Integer.toString(AppConstants.CATEGORY_CARTOONS));
 			label.setOnMouseClicked(categoryClickedEvent);
 			vb.getChildren().add(label);
-			pane.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			vb.setUserData(pane.getUserData());
+			vb.setOnMouseReleased(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent me) {
-					Parser parser = (Parser)((TitledPane)me.getSource()).getUserData();
-					if(!parser.equals(mainApp.getCurrentParser()))
-						mainApp.setCurrentParser(parser);
+					mainApp.setCurrentParser((Parser)((VBox)me.getSource()).getUserData());
 				}
 			});
 			pane.setContent(vb);
