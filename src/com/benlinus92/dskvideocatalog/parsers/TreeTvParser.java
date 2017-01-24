@@ -48,7 +48,7 @@ public class TreeTvParser implements Parser {
 	public TreeTvParser() {
 		mediaStreamsList = new ArrayList<>();
 		mediaStreamsList.add(MediaStream.MP4);
-		mediaStreamsList.add(MediaStream.HLS_STREAM);
+		mediaStreamsList.add(MediaStream.HLS);
 	}
 	
 	@Override

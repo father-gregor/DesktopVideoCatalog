@@ -9,6 +9,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.benlinus92.dskvideocatalog.MainApp;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
+import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
 import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
@@ -87,8 +88,17 @@ public class ItemBrowserController {
 				BorderPane typePane = new BorderPane();
 				typePane.setLeft(new Label(typeItem.getType()));
 				typePane.setUserData(typeItem.getVideosList());
-				typePane.setOnMouseClicked(new VideoTypeLinksOpenedEventHandler());
+				VBox mediaStreamsBox = new VBox(); 
+				for(MediaStream mediaType: mainApp.getCurrentParser().getMediaStreamsList()) {
+					BorderPane mediaStreamPane = new BorderPane();
+					mediaStreamPane.setLeft(new Label(mediaType.toString()));
+					mediaStreamsBox.getChildren().add(mediaStreamPane);
+				}
+				mediaStreamsBox.setVisible(false);
+				mediaStreamsBox.setManaged(false);
+				typePane.setOnMouseClicked(new MediaStreamListOpenedEventHandler());
 				vbox.getChildren().add(typePane);
+				vbox.getChildren().add(mediaStreamsBox);
 			}
 			linksPane.setContent(vbox);
 		} catch(IllegalArgumentException e) {
@@ -118,32 +128,26 @@ public class ItemBrowserController {
 	public void setMainApp(MainApp app) {
 		this.mainApp = app;
 	}
-	private class VideoTypeLinksOpenedEventHandler implements EventHandler<MouseEvent> {
-		@SuppressWarnings("unchecked")
+	private class MediaStreamListOpenedEventHandler implements EventHandler<MouseEvent> {
 		@Override
 		public void handle(MouseEvent me) {
 			BorderPane videoLink = (BorderPane)me.getSource();
 			videoLink.removeEventHandler(MouseEvent.MOUSE_CLICKED, videoLink.getOnMouseClicked());
 			int videoLinkIndex = ((VBox)videoLink.getParent()).getChildren().indexOf(videoLink);
-			VBox linksVBox = new VBox();
-			for(VideoLink link: (List<VideoLink>)videoLink.getUserData()) {
-				BorderPane linkPane = new BorderPane();
-				linkPane.setLeft(new Label(link.getVideoName()));
-				linkPane.setRight(new Hyperlink(link.getLink()));
-				linksVBox.getChildren().add(linkPane);
-			}
-			videoLink.setOnMouseClicked(new VideoTypeLinksClosedEventHandler());
-			((VBox)videoLink.getParent()).getChildren().add(videoLinkIndex + 1, linksVBox);
+			((VBox)videoLink.getParent()).getChildren().get(videoLinkIndex + 1).setManaged(true);
+			((VBox)videoLink.getParent()).getChildren().get(videoLinkIndex + 1).setVisible(true);
+			videoLink.setOnMouseClicked(new MediaStreamListClosedEventHandler());
 		}
 	}
-	private class VideoTypeLinksClosedEventHandler implements EventHandler<MouseEvent> {
+	private class MediaStreamListClosedEventHandler implements EventHandler<MouseEvent> {
 		@Override
 		public void handle(MouseEvent me) {
 			BorderPane videoLink = (BorderPane)me.getSource();
 			videoLink.removeEventHandler(MouseEvent.MOUSE_CLICKED, videoLink.getOnMouseClicked());
 			int videoLinkIndex = ((VBox)videoLink.getParent()).getChildren().indexOf(videoLink);
-			((VBox)videoLink.getParent()).getChildren().remove(videoLinkIndex + 1); //remove next element in VBox, which is expanded 'links list'
-			videoLink.setOnMouseClicked(new VideoTypeLinksOpenedEventHandler());
+			((VBox)videoLink.getParent()).getChildren().get(videoLinkIndex + 1).setManaged(false);
+			((VBox)videoLink.getParent()).getChildren().get(videoLinkIndex + 1).setVisible(false);
+			videoLink.setOnMouseClicked(new MediaStreamListOpenedEventHandler());
 		}
 	}
 }
