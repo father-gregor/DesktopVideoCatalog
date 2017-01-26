@@ -32,6 +32,7 @@ public class ItemBrowserController {
 
 	private MainApp mainApp;
 	private String currentItemUrl;
+	private BrowserVideoItem currentVideoItem;
 	@FXML private TabPane tabPane;
 	@FXML private ScrollPane linksPane;
 	@FXML private ImageView posterImage;
@@ -89,9 +90,16 @@ public class ItemBrowserController {
 				typePane.setLeft(new Label(typeItem.getType()));
 				typePane.setUserData(typeItem.getVideosList());
 				VBox mediaStreamsBox = new VBox(); 
+				mediaStreamsBox.setUserData(typeItem);
 				for(MediaStream mediaType: mainApp.getCurrentParser().getMediaStreamsList()) {
 					BorderPane mediaStreamPane = new BorderPane();
 					mediaStreamPane.setLeft(new Label(mediaType.toString()));
+					mediaStreamPane.setUserData(mediaType);
+					mediaStreamPane.setOnMouseClicked(me -> {
+						VideoTranslationType videoType = (VideoTranslationType)((VBox)((BorderPane)me.getSource()).getParent()).getUserData();
+						MediaStream clickedStream = (MediaStream)((BorderPane)me.getSource()).getUserData();
+						mainApp.initVideoListLayout(videoType, clickedStream);
+					});
 					mediaStreamsBox.getChildren().add(mediaStreamPane);
 				}
 				mediaStreamsBox.setVisible(false);
