@@ -22,6 +22,7 @@ import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
+import com.benlinus92.dskvideocatalog.model.VideoLink;
 
 public class ExFsParser implements Parser {
 	private final static String EXFS_FILMS_URL = "http://ex-fs.net/films/page/";
@@ -132,6 +133,11 @@ public class ExFsParser implements Parser {
 				break;
 			}
 		return item;
+	}
+	
+	@Override
+	public String getVideoStreamUrl(VideoLink video, MediaStream type) {
+		return null;
 	}
 
 	@Override

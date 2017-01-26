@@ -24,6 +24,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -44,8 +45,10 @@ public class TreeTvParser implements Parser {
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private final static String ID_SAMPLE = "TREE_TV_";
 	private List<MediaStream> mediaStreamsList;
+	private int sessionUserId = 203;
 	
 	public TreeTvParser() {
+		sessionUserId = (int)Math.random() * 1000 + 203; 
 		mediaStreamsList = new ArrayList<>();
 		mediaStreamsList.add(MediaStream.MP4);
 		mediaStreamsList.add(MediaStream.HLS);
@@ -108,24 +111,33 @@ public class TreeTvParser implements Parser {
 	private void testLinkParser() {
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
-			HttpPost request = new HttpPost(TREE_TV_BASIC_URL + "/film/index/link");
-			request.addHeader("Referer", "http://tree.tv/film/23050-fantasticheskie-tvari-i-gde-oni-obitayut");
-			request.addHeader("User-agent", AppConstants.USER_AGENT);
-			request.addHeader("X-Requested-With:", "XMLHttpRequest");
-			request.addHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-			request.addHeader("Host", "tree.tv");
-			request.addHeader("Origin", "http://tree.tv");
-			//request.addHeader("Cookie", "");
+			//HttpPost request = new HttpPost("http://player.tree.tv/guard/guard/");
+			HttpPost request = new HttpPost("http://player.tree.tv/guard");
+			request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+			//request.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+			//request.addHeader("Host", "player.tree.tv");
+			//request.addHeader("Origin", "http://player.tree.tv");
+			//request.addHeader("Referer", "http://player.tree.tv/?file=172171&source=1&user=false");
+			//request.addHeader("X-Requested-With", "XMLHttpRequest");
+			//request.addHeader("Content-type","application/x-www-form-urlencoded; charset=UTF-8");
+			request.addHeader("Cookie", "UserEnter=1485381600%3B1; _ym_uid=1485459042829610016; __utmt_UA-74494818-1=1; __utma=5082486.189258326.1485459043.1485459043.1485459043.1; __utmb=5082486.1.10.1485459043; __utmc=5082486; __utmz=5082486.1485459043.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _ym_isad=2; _ym_visorc_21285844=w; key=ef23bb02375f95888a559ef9654cbef1fa716109; PHPSESSID=50cne3m2enh6th71e0r1soi8a3");
+			//request.addHeader("Accept", "application/json");
+			//request.setHeader("Content-Length", "28");
+			int paramKey = (int)Math.random()*6 + 1;
 			List<BasicNameValuePair> list = new ArrayList<>();
-			list.add(new BasicNameValuePair("quality", "480"));
-			list.add(new BasicNameValuePair("file", "172171"));
+			list.add(new BasicNameValuePair("key", "55"));
+			//list.add(new BasicNameValuePair("file", "172171"));
+			//list.add(new BasicNameValuePair("source", "1"));
+			//list.add(new BasicNameValuePair("skc", "103"));
 			request.setEntity(new UrlEncodedFormEntity(list));
 			HttpResponse response = client.execute(request);
 			System.out.println("GET LINK: " + response.getStatusLine().getStatusCode());
-			BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+			System.out.println("JSON" + EntityUtils.toString(response.getEntity()));
+			//BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			String line = null;
-			while((line = br.readLine()) != null)
-				System.out.println(line);
+			/*if((line = br.readLine()) != null) {
+				System.out.println("1 - " + line);
+			}*/
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -181,6 +193,43 @@ public class TreeTvParser implements Parser {
 		}
 		item.setVideoTransTypeList(typeList);
 		return item;
+	}
+	
+	@Override
+	public String getVideoStreamUrl(VideoLink video, MediaStream type) {
+		try {
+			if(type == MediaStream.MP4) {
+				
+			} else if(type == MediaStream.HLS) {
+				
+			}
+			for(int triesCount = 0; triesCount < 3; triesCount++) {
+				HttpClient client = HttpClientBuilder.create().build();
+				HttpPost request = new HttpPost(TREE_TV_BASIC_URL + "/film/index/link");
+				request.addHeader("User-agent", AppConstants.USER_AGENT);
+				request.addHeader("Cookie", "user_id=" + sessionUserId);
+				List<BasicNameValuePair> list = new ArrayList<>();
+				list.add(new BasicNameValuePair("quality", "480"));
+				list.add(new BasicNameValuePair("file", "172171"));
+				request.setEntity(new UrlEncodedFormEntity(list));
+				HttpResponse response = client.execute(request);
+				System.out.println("GET LINK: " + response.getStatusLine().getStatusCode());
+					System.out.println(response.getEntity().getContent().available());
+				BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+				String line = null;
+				if((line = br.readLine()) != null) {
+					System.out.println(line);
+					br.close();
+				}
+				if(line != null) {
+					triesCount = 3;
+					line = "";
+				}
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

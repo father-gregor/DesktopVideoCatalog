@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
+import com.benlinus92.dskvideocatalog.model.VideoLink;
 
 public interface Parser {
 	public String getHtmlContent(String url) throws IOException;
@@ -17,5 +18,6 @@ public interface Parser {
 	public BrowserVideoItem getVideoItemByUrl(String url);
 	public SimpleVideoItem createCatalogVideoItemFromHtml(Element el);
 	public BrowserVideoItem createBrowserVideoItemFromHtml(Element el);
+	public String getVideoStreamUrl(VideoLink video, MediaStream type);
 	public List<MediaStream> getMediaStreamsList();
 }
