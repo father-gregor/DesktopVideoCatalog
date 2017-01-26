@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.benlinus92.dskvideocatalog.model.MediaStream;
+import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 import com.benlinus92.dskvideocatalog.viewcontroller.CatalogController;
 import com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController;
 import com.benlinus92.dskvideocatalog.viewcontroller.RootWindowController;
+import com.benlinus92.dskvideocatalog.viewcontroller.VideoListController;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -34,6 +37,7 @@ public class MainApp extends Application {
 	private RootWindowController root;
 	private CatalogController catalog;
 	private ItemBrowserController itemBrowser;
+	private VideoListController videoList;
 	private Runtime runtime = Runtime.getRuntime();
 	private Parser currentParser;
 	private List<Pane> savedPanesList = new ArrayList<>();
@@ -75,7 +79,6 @@ public class MainApp extends Application {
 			catalog = fxml.getController();
 			catalog.setMainApp(this);
 			catalog.startUpdateCatalogThread();
-			//catalog.updateCatalog();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -97,16 +100,16 @@ public class MainApp extends Application {
 			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getImageViewerWindowProp()));
 			AnchorPane imageWindow = (AnchorPane) fxml.load();
 			imageWindow.getChildren().add(new ImageView(image));
-			imageWindow.setOnScroll(e -> {
+			imageWindow.setOnScroll(se -> {
                 double zoomFactor = 1.15;
-                double deltaY = e.getDeltaY();
+                double deltaY = se.getDeltaY();
                 if (deltaY < 0){
                   zoomFactor = 2.0 - zoomFactor;
                 }
-                AnchorPane pane = (AnchorPane)e.getSource();
+                AnchorPane pane = (AnchorPane)se.getSource();
                 pane.setScaleX(pane.getScaleX() * zoomFactor);
                 pane.setScaleY(pane.getScaleY() * zoomFactor);
-                e.consume();
+                se.consume();
 			});
 			Stage secondStage = new Stage();
 			secondStage.setScene(new Scene(imageWindow));
@@ -115,6 +118,22 @@ public class MainApp extends Application {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	public void initVideoListLayout(VideoTranslationType videoItem, MediaStream streamType) {
+		try {
+			FXMLLoader fxml = new FXMLLoader();
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getVideoListViewProp()));
+			AnchorPane videoListPane = (AnchorPane)fxml.load();
+			videoList = fxml.getController();
+			videoList.setMainApp(this);
+			videoList.initializeVideoList(videoItem, streamType);
+			primaryStage.setScene(new Scene(videoListPane));
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void openMainWindow() {
+		primaryStage.setScene(mainLayout.getScene());
 	}
 	public void changeCategory(int category) {
 		catalog.updateCatalogWithNewCategory(category);

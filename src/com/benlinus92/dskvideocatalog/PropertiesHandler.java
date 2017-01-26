@@ -15,6 +15,7 @@ public class PropertiesHandler {
 	private String catalogViewProp = "";
 	private String itembrowserViewProp = "";
 	private String imageViewerWindowProp = "";
+	private String videoListViewProp = "";
 	private ResourceBundle appUnitsBundle;
 	
 	public static PropertiesHandler getInstance() {
@@ -33,6 +34,7 @@ public class PropertiesHandler {
 				catalogViewProp = prop.getProperty("view.catalog");
 				itembrowserViewProp = prop.getProperty("view.itembrowser");
 				imageViewerWindowProp = prop.getProperty("view.imageviewerwindow");
+				videoListViewProp = prop.getProperty("view.videolist");
 				Locale locale = new Locale(prop.getProperty("locale.lang"), prop.getProperty("locale.country"));
 				appUnitsBundle = ResourceBundle.getBundle(fileLocale, locale);
 			}
@@ -61,6 +63,9 @@ public class PropertiesHandler {
 	}
 	public String getItembrowserViewProp() {
 		return itembrowserViewProp;
+	}
+	public String getVideoListViewProp() {
+		return videoListViewProp;
 	}
 	public String getImageViewerWindowProp() {
 		return imageViewerWindowProp;
