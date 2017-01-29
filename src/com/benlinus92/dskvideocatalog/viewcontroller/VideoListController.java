@@ -8,6 +8,7 @@ import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,8 @@ public class VideoListController {
 	private VideoTranslationType videoItem; 
 	private MediaStream streamType;
 	private VBox videoListBox;
+	@FXML
+	private ScrollPane listScrollPane;
 	@FXML
 	private Button backButton;
 	@FXML
@@ -40,7 +43,9 @@ public class VideoListController {
 			videoElemPane.setOnMouseClicked(me -> {
 				openVideoStream((VideoLink)((BorderPane)me.getSource()).getUserData());
 			});
+			videoListBox.getChildren().add(videoElemPane);
 		}
+		listScrollPane.setContent(videoListBox);
 	}
 	private void openVideoStream(VideoLink video) {
 		String streamUrl = mainApp.getCurrentParser().getVideoStreamUrl(video, this.streamType);
