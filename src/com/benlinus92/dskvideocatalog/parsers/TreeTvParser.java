@@ -9,6 +9,8 @@ import java.nio.charset.CharsetDecoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -23,6 +26,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
@@ -36,6 +40,11 @@ import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
 import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public class TreeTvParser implements Parser {
 	private final static String TREE_TV_FILMS_URL = "http://tree.tv/films/sortType/new/page/";
@@ -46,9 +55,11 @@ public class TreeTvParser implements Parser {
 	private final static String ID_SAMPLE = "TREE_TV_";
 	private List<MediaStream> mediaStreamsList;
 	private int sessionUserId = 203;
+	private String sessionKey = "";
+	private String sessionPHPSessid = "";
 	
 	public TreeTvParser() {
-		sessionUserId = (int)Math.random() * 1000 + 203; 
+		sessionUserId = generateUserId(); 
 		mediaStreamsList = new ArrayList<>();
 		mediaStreamsList.add(MediaStream.MP4);
 		mediaStreamsList.add(MediaStream.HLS);
@@ -61,6 +72,13 @@ public class TreeTvParser implements Parser {
 		request.addHeader("User-Agent", AppConstants.USER_AGENT); 
 		HttpResponse response = client.execute(request);
 		System.out.println(response.getStatusLine().getStatusCode());
+		for(Header header: Arrays.asList(response.getHeaders("Set-Cookie"))) {
+			if(header.getValue().contains("key=")) {
+				sessionKey = header.getValue().split(";")[0];
+			} else if(header.getValue().contains("PHPSESSID=")) {
+				sessionPHPSessid = header.getValue().split(";")[0];
+			}
+		}
 		BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 		String line = null;
 		StringBuilder sb = new StringBuilder();
@@ -108,39 +126,91 @@ public class TreeTvParser implements Parser {
 		item.setId(ID_SAMPLE);
 		return item;
 	}
-	private void testLinkParser() {
+	private String getMp4StreamUrl(String videoId) {
+		String fileLink = "";
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
-			//HttpPost request = new HttpPost("http://player.tree.tv/guard/guard/");
-			HttpPost request = new HttpPost("http://player.tree.tv/guard");
-			request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
-			//request.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-			//request.addHeader("Host", "player.tree.tv");
-			//request.addHeader("Origin", "http://player.tree.tv");
-			//request.addHeader("Referer", "http://player.tree.tv/?file=172171&source=1&user=false");
-			//request.addHeader("X-Requested-With", "XMLHttpRequest");
-			//request.addHeader("Content-type","application/x-www-form-urlencoded; charset=UTF-8");
-			request.addHeader("Cookie", "UserEnter=1485381600%3B1; _ym_uid=1485459042829610016; __utmt_UA-74494818-1=1; __utma=5082486.189258326.1485459043.1485459043.1485459043.1; __utmb=5082486.1.10.1485459043; __utmc=5082486; __utmz=5082486.1485459043.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _ym_isad=2; _ym_visorc_21285844=w; key=ef23bb02375f95888a559ef9654cbef1fa716109; PHPSESSID=50cne3m2enh6th71e0r1soi8a3");
-			//request.addHeader("Accept", "application/json");
-			//request.setHeader("Content-Length", "28");
-			int paramKey = (int)Math.random()*6 + 1;
+			HttpPost request = new HttpPost(TREE_TV_BASIC_URL + "/film/index/link");
+			request.addHeader("User-agent", AppConstants.USER_AGENT);
+			request.addHeader("Cookie", "user_id=" + sessionUserId);
 			List<BasicNameValuePair> list = new ArrayList<>();
-			list.add(new BasicNameValuePair("key", "55"));
-			//list.add(new BasicNameValuePair("file", "172171"));
-			//list.add(new BasicNameValuePair("source", "1"));
-			//list.add(new BasicNameValuePair("skc", "103"));
+			list.add(new BasicNameValuePair("quality", "480"));
+			list.add(new BasicNameValuePair("file", videoId));
 			request.setEntity(new UrlEncodedFormEntity(list));
 			HttpResponse response = client.execute(request);
-			System.out.println("GET LINK: " + response.getStatusLine().getStatusCode());
-			System.out.println("JSON" + EntityUtils.toString(response.getEntity()));
-			//BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			String line = null;
-			/*if((line = br.readLine()) != null) {
-				System.out.println("1 - " + line);
-			}*/
+			while((line = br.readLine()) != null) {
+				if(line.contains("http://")) {
+					fileLink = line;
+					break;
+				}
+			}
+			br.close();
 		} catch(IOException e) {
 			e.printStackTrace();
+			sessionUserId = generateUserId(); //in case of exception generate new user id which is not compromised
 		}
+		return fileLink;
+	}
+	/**
+	 * Method implements exactly the same logic as correspondent
+	 * method in website's app.js to get URL for M3U8-playlist
+	 **/
+	private String getHlsStreamUrl(String videoId) {
+		String playlistLink = "";
+		try {
+			Header userAgent = new BasicHeader("User-Agent", AppConstants.USER_AGENT);
+			Header cookie = new BasicHeader("Cookie", sessionPHPSessid + "; " + sessionKey);
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpPost request = new HttpPost("http://player.tree.tv/guard");
+			request.addHeader(userAgent);
+			request.addHeader(cookie);
+			List<BasicNameValuePair> list = new ArrayList<>();
+			list.add(new BasicNameValuePair("key", "55"));
+			request.setEntity(new UrlEncodedFormEntity(list));
+			HttpResponse response = client.execute(request);
+			JsonParser jsonP = new JsonParser();
+			JsonObject jsonObj = jsonP.parse(EntityUtils.toString(response.getEntity())).getAsJsonObject();
+			String gParam = jsonObj.get("g").getAsString();
+			String pParam = jsonObj.get("p").getAsString();
+			int paramKey = (int)Math.random()*6 + 1;
+			int clientKey = ((int)Math.pow(Double.parseDouble(gParam), (double)paramKey)) % Integer.parseInt(pParam);
+			request = new HttpPost("http://player.tree.tv/guard");
+			request.addHeader(userAgent);
+			request.addHeader(cookie);
+			list = new ArrayList<>();
+			list.add(new BasicNameValuePair("key", String.valueOf(clientKey)));
+			request.setEntity(new UrlEncodedFormEntity(list));
+			response = client.execute(request);
+			jsonObj = jsonP.parse(EntityUtils.toString(response.getEntity())).getAsJsonObject();
+			String s_keyParam = jsonObj.get("s_key").getAsString();
+			System.out.println("S_KEY PARAM: " + s_keyParam);
+			s_keyParam = String.valueOf(((int)Math.pow(Double.parseDouble(s_keyParam), (double)paramKey)) % Integer.parseInt(pParam));
+			request = new HttpPost("http://player.tree.tv/guard/guard/");
+			request.addHeader(userAgent);
+			request.addHeader(cookie);
+			list = new ArrayList<>();
+			list.add(new BasicNameValuePair("file", videoId));
+			list.add(new BasicNameValuePair("source", "1"));
+			list.add(new BasicNameValuePair("skc", s_keyParam));
+			request.setEntity(new UrlEncodedFormEntity(list));
+			response = client.execute(request);
+			String resp = EntityUtils.toString(response.getEntity());
+			System.out.println("RESPONSE " + resp);
+			JsonArray jsonArr = jsonP.parse(resp).getAsJsonArray();
+			for (JsonElement jsonElem : jsonArr) {
+				String elemId = jsonElem.getAsJsonObject().get("sources").getAsJsonArray().get(0)
+						.getAsJsonObject().get("point").getAsString();
+				if(videoId.equals(elemId))
+					playlistLink = jsonElem.getAsJsonObject().get("sources").getAsJsonArray().get(0)
+							.getAsJsonObject().get("src").getAsString();
+			}
+		} catch(IOException | JsonSyntaxException e) {
+			e.printStackTrace();
+			sessionUserId = generateUserId(); 
+		} 
+		return playlistLink;
 	}
 	@Override
 	public BrowserVideoItem getVideoItemByUrl(String url) {
@@ -148,7 +218,6 @@ public class TreeTvParser implements Parser {
 		try {
 			String html = getHtmlContent(url);
 			Document content = Jsoup.parse(html);
-			testLinkParser();
 			item = createBrowserVideoItemFromHtml(content.select("div.main_bg").first());
 		} catch(ClientProtocolException e) {
 			e.printStackTrace();
@@ -197,41 +266,22 @@ public class TreeTvParser implements Parser {
 	
 	@Override
 	public String getVideoStreamUrl(VideoLink video, MediaStream type) {
+		String videoLink = "";
 		try {
 			if(type == MediaStream.MP4) {
-				
+				videoLink = getMp4StreamUrl(video.getId());
 			} else if(type == MediaStream.HLS) {
-				
+				videoLink = getHlsStreamUrl(video.getId());
 			}
-			for(int triesCount = 0; triesCount < 3; triesCount++) {
-				HttpClient client = HttpClientBuilder.create().build();
-				HttpPost request = new HttpPost(TREE_TV_BASIC_URL + "/film/index/link");
-				request.addHeader("User-agent", AppConstants.USER_AGENT);
-				request.addHeader("Cookie", "user_id=" + sessionUserId);
-				List<BasicNameValuePair> list = new ArrayList<>();
-				list.add(new BasicNameValuePair("quality", "480"));
-				list.add(new BasicNameValuePair("file", "172171"));
-				request.setEntity(new UrlEncodedFormEntity(list));
-				HttpResponse response = client.execute(request);
-				System.out.println("GET LINK: " + response.getStatusLine().getStatusCode());
-					System.out.println(response.getEntity().getContent().available());
-				BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-				String line = null;
-				if((line = br.readLine()) != null) {
-					System.out.println(line);
-					br.close();
-				}
-				if(line != null) {
-					triesCount = 3;
-					line = "";
-				}
-			}
-		} catch(IOException e) {
+			System.out.println(videoLink);
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-
+	private int generateUserId() {
+		return (int)Math.random() * 10000 + 203; 
+	}
 	@Override
 	public List<MediaStream> getMediaStreamsList() {
 		return mediaStreamsList;
