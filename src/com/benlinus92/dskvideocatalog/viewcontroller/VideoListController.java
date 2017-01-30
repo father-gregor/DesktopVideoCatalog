@@ -41,25 +41,14 @@ public class VideoListController {
 			videoElemPane.setUserData(video);
 			videoElemPane.setLeft(new Label(video.getVideoName()));
 			videoElemPane.setOnMouseClicked(me -> {
-				openVideoStream((VideoLink)((BorderPane)me.getSource()).getUserData());
+				openVideoStreamPlayer((VideoLink)((BorderPane)me.getSource()).getUserData());
 			});
 			videoListBox.getChildren().add(videoElemPane);
 		}
 		listScrollPane.setContent(videoListBox);
 	}
-	private void openVideoStream(VideoLink video) {
-		String streamUrl = mainApp.getCurrentParser().getVideoStreamUrl(video, this.streamType);
-		System.out.println(streamUrl);
-		switch(this.streamType) {
-			case MP4:
-				break;
-			case HLS:
-				break;
-			case M3U8:
-				break;
-			default:
-				break;
-		}
+	private void openVideoStreamPlayer(VideoLink video) {
+		mainApp.initMediaPlayerLayout(video, this.streamType);
 	}
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
