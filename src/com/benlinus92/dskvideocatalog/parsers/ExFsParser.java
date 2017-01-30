@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -136,7 +137,7 @@ public class ExFsParser implements Parser {
 	}
 	
 	@Override
-	public String getVideoStreamUrl(VideoLink video, MediaStream type) {
+	public Map<String, String> getVideoStreamMap(VideoLink video, MediaStream type) {
 		return null;
 	}
 

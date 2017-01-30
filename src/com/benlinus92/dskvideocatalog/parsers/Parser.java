@@ -2,6 +2,7 @@ package com.benlinus92.dskvideocatalog.parsers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.jsoup.nodes.Document;
@@ -18,6 +19,6 @@ public interface Parser {
 	public BrowserVideoItem getVideoItemByUrl(String url);
 	public SimpleVideoItem createCatalogVideoItemFromHtml(Element el);
 	public BrowserVideoItem createBrowserVideoItemFromHtml(Element el);
-	public String getVideoStreamUrl(VideoLink video, MediaStream type);
+	public Map<String, String> getVideoStreamMap(VideoLink video, MediaStream type);
 	public List<MediaStream> getMediaStreamsList();
 }
