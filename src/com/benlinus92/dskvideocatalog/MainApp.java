@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.benlinus92.dskvideocatalog.model.MediaStream;
+import com.benlinus92.dskvideocatalog.model.VideoLink;
 import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 import com.benlinus92.dskvideocatalog.viewcontroller.CatalogController;
 import com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController;
+import com.benlinus92.dskvideocatalog.viewcontroller.MediaPlayerController;
 import com.benlinus92.dskvideocatalog.viewcontroller.RootWindowController;
 import com.benlinus92.dskvideocatalog.viewcontroller.VideoListController;
 
@@ -111,10 +113,10 @@ public class MainApp extends Application {
                 pane.setScaleY(pane.getScaleY() * zoomFactor);
                 se.consume();
 			});
-			Stage secondStage = new Stage();
-			secondStage.setScene(new Scene(imageWindow));
-			secondStage.setTitle("Image");
-			secondStage.show();
+			Stage imageStage = new Stage();
+			imageStage.setScene(new Scene(imageWindow));
+			imageStage.setTitle("Image");
+			imageStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -128,6 +130,25 @@ public class MainApp extends Application {
 			videoList.setMainApp(this);
 			videoList.initializeVideoList(videoItem, streamType);
 			primaryStage.setScene(new Scene(videoListPane));
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void initMediaPlayerLayout(VideoLink video, MediaStream streamType) {
+		try {
+			FXMLLoader fxml = new FXMLLoader();
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getMediaPlayerViewProp()));
+			AnchorPane mediaPlayerPane = (AnchorPane)fxml.load();
+			MediaPlayerController mediaPlayer = fxml.getController();
+			mediaPlayer.setMainApp(this);
+			mediaPlayer.initializeMediaPlayer(video, streamType);
+			Stage videoStage = new Stage();
+			videoStage.setScene(new Scene(mediaPlayerPane, 640.0, 480.0));
+			videoStage.setTitle("Player");
+			videoStage.setOnCloseRequest(e -> {
+				((Stage)e.getSource()).setScene(null);
+			});
+			videoStage.show();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
