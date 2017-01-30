@@ -35,6 +35,7 @@ public class MediaPlayerController {
 						Media media = new Media(availableStreams.get("480"));
 						MediaPlayer player = new MediaPlayer(media);
 						player.setAutoPlay(true);
+						player.setMute(true);
 						playerView.setMediaPlayer(player);
 					}
 				});

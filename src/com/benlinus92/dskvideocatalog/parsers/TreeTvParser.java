@@ -163,6 +163,7 @@ public class TreeTvParser implements Parser {
 	 * method in website's app.js to get URL for M3U8-playlist
 	 **/
 	private Map<String, String> getHlsStreamMap(String videoId) {
+		long begin = System.currentTimeMillis();
 		String playlistLink = "";
 		Map<String, String> availablePlaylist = new LinkedHashMap<>();
 		try {
@@ -182,10 +183,11 @@ public class TreeTvParser implements Parser {
 			String pParam = jsonObj.get("p").getAsString();
 			int paramKey = (int)Math.random()*6 + 1;
 			int clientKey = ((int)Math.pow(Double.parseDouble(gParam), (double)paramKey)) % Integer.parseInt(pParam);
+			
 			postRequest = new HttpPost("http://player.tree.tv/guard");
 			postRequest.addHeader(userAgent);
 			postRequest.addHeader(cookie);
-			list = new ArrayList<>();
+			list.clear();
 			list.add(new BasicNameValuePair("key", String.valueOf(clientKey)));
 			postRequest.setEntity(new UrlEncodedFormEntity(list));
 			response = client.execute(postRequest);
@@ -193,25 +195,26 @@ public class TreeTvParser implements Parser {
 			String s_keyParam = jsonObj.get("s_key").getAsString();
 			System.out.println("S_KEY PARAM: " + s_keyParam);
 			s_keyParam = String.valueOf(((int)Math.pow(Double.parseDouble(s_keyParam), (double)paramKey)) % Integer.parseInt(pParam));
+			
 			postRequest = new HttpPost("http://player.tree.tv/guard/guard/");
 			postRequest.addHeader(userAgent);
 			postRequest.addHeader(cookie);
-			list = new ArrayList<>();
+			list.clear();
 			list.add(new BasicNameValuePair("file", videoId));
 			list.add(new BasicNameValuePair("source", "1"));
 			list.add(new BasicNameValuePair("skc", s_keyParam));
 			postRequest.setEntity(new UrlEncodedFormEntity(list));
 			response = client.execute(postRequest);
 			String resp = EntityUtils.toString(response.getEntity());
-			System.out.println("RESPONSE " + resp);
+			//System.out.println("RESPONSE " + resp);
 			JsonArray jsonArr = jsonP.parse(resp).getAsJsonArray();
 			for (JsonElement jsonElem : jsonArr) {
-				String elemId = jsonElem.getAsJsonObject().get("sources").getAsJsonArray().get(0)
-						.getAsJsonObject().get("point").getAsString();
-				if(videoId.equals(elemId))
-					playlistLink = jsonElem.getAsJsonObject().get("sources").getAsJsonArray().get(0)
-							.getAsJsonObject().get("src").getAsString();
+				playlistLink = searchLinkInJsonArray(jsonElem.getAsJsonObject().get("sources").getAsJsonArray(), videoId);
+				if(playlistLink.length() > 0)
+					break;
 			}
+			System.out.println("LINK " + playlistLink);
+			
 			HttpGet getRequest = new HttpGet(playlistLink);
 			getRequest.addHeader(userAgent);
 			getRequest.addHeader(cookie);
@@ -229,7 +232,17 @@ public class TreeTvParser implements Parser {
 			e.printStackTrace();
 			sessionUserId = generateUserId(); 
 		} 
+		long end = System.currentTimeMillis();
+		System.out.println((end - begin)/1000.0);
 		return availablePlaylist;
+	}
+	private String searchLinkInJsonArray(JsonArray jsonArr, String videoId) {
+		for(JsonElement sourceElem: jsonArr) {
+			if(videoId.equals(sourceElem.getAsJsonObject().get("point").getAsString())) {
+				return sourceElem.getAsJsonObject().get("src").getAsString();
+			}
+		}
+		return "";
 	}
 	@Override
 	public BrowserVideoItem getVideoItemByUrl(String url) {

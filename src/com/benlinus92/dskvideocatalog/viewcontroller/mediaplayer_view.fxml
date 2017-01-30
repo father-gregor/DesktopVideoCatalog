@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.media.MediaView?>
 
-<AnchorPane minHeight="300.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benlinus92.dskvideocatalog.viewcontroller.MediaPlayerController">
-   <children>
-      <MediaView fx:id="playerView" fitHeight="270.0" fitWidth="470.0" layoutX="15.0" layoutY="15.0" />
-   </children>
-</AnchorPane>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benlinus92.dskvideocatalog.viewcontroller.MediaPlayerController">
+   <center>
+      <MediaView fx:id="playerView" BorderPane.alignment="CENTER">
+         <viewport>
+            <Rectangle2D />
+         </viewport>
+      </MediaView>
+   </center>
+</BorderPane>

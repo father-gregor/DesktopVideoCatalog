@@ -138,12 +138,12 @@ public class MainApp extends Application {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
 			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getMediaPlayerViewProp()));
-			AnchorPane mediaPlayerPane = (AnchorPane)fxml.load();
+			BorderPane mediaPlayerPane = (BorderPane)fxml.load();
 			MediaPlayerController mediaPlayer = fxml.getController();
 			mediaPlayer.setMainApp(this);
 			mediaPlayer.initializeMediaPlayer(video, streamType);
 			Stage videoStage = new Stage();
-			videoStage.setScene(new Scene(mediaPlayerPane, 640.0, 480.0));
+			videoStage.setScene(new Scene(mediaPlayerPane, 600, 600));
 			videoStage.setTitle("Player");
 			videoStage.setOnCloseRequest(e -> {
 				((Stage)e.getSource()).setScene(null);
