@@ -238,9 +238,8 @@ public class TreeTvParser implements Parser {
 	}
 	private String searchLinkInJsonArray(JsonArray jsonArr, String videoId) {
 		for(JsonElement sourceElem: jsonArr) {
-			if(videoId.equals(sourceElem.getAsJsonObject().get("point").getAsString())) {
+			if(videoId.equals(sourceElem.getAsJsonObject().get("point").getAsString()))
 				return sourceElem.getAsJsonObject().get("src").getAsString();
-			}
 		}
 		return "";
 	}

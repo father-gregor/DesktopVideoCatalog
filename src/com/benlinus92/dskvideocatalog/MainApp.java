@@ -28,11 +28,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
 	private Stage primaryStage;
+	private Stage playerStage;
 	private Pane mainLayout;
 	private Pane catalogLayout;
 	private Pane itemBrowserLayout;
@@ -140,15 +142,18 @@ public class MainApp extends Application {
 			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getMediaPlayerViewProp()));
 			BorderPane mediaPlayerPane = (BorderPane)fxml.load();
 			MediaPlayerController mediaPlayer = fxml.getController();
+			playerStage = new Stage();
 			mediaPlayer.setMainApp(this);
 			mediaPlayer.initializeMediaPlayer(video, streamType);
-			Stage videoStage = new Stage();
-			videoStage.setScene(new Scene(mediaPlayerPane, 600, 600));
-			videoStage.setTitle("Player");
-			videoStage.setOnCloseRequest(e -> {
+			mediaPlayerPane.setStyle("-fx-background-color: Black");
+			Scene videoScene = new Scene(mediaPlayerPane);
+			videoScene.setFill(Color.BLACK);
+			playerStage.setScene(videoScene);
+			playerStage.setTitle("Player");
+			playerStage.setOnCloseRequest(e -> {
 				((Stage)e.getSource()).setScene(null);
 			});
-			videoStage.show();
+			playerStage.show();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -171,6 +176,9 @@ public class MainApp extends Application {
 	
 	public Stage getPrimaryStage() {
 		return this.primaryStage;
+	}
+	public Stage getPlayerStage() {
+		return this.playerStage;
 	}
 	public Pane getCatalogPane() {
 		return this.catalogLayout;
