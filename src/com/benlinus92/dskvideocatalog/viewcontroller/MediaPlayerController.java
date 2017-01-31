@@ -9,6 +9,9 @@ import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -35,6 +38,7 @@ public class MediaPlayerController {
 	private MainApp mainApp;
 	private MediaPlayer player = null;
 	private Slider timeSlider;
+	private DoubleProperty timeProperty;
 	private EventHandler<MouseEvent> enteredButton;
 	private EventHandler<MouseEvent> exitedButton;
 	private ChangeListener<Duration> timeListener;
@@ -68,7 +72,11 @@ public class MediaPlayerController {
 		};
 		toolbarBox.setStyle("-fx-background-color:" + TOOLBAR_COLOR);
 		timeSlider = createTimeSlider();
-		timeListener = (observable, oldV, newV) -> timeSlider.setValue(newV.toSeconds());
+		timeProperty = new SimpleDoubleProperty(0);
+		timeListener = (observable, oldV, newV) -> {
+			if(!timeSlider.isValueChanging())
+				timeSlider.setValue(newV.toSeconds());
+		};
 		toolbarBox.getChildren().add(timeSlider);
 		createToolbar();
 	}
@@ -169,7 +177,16 @@ public class MediaPlayerController {
 	private Slider createTimeSlider() {
 		Slider slider = new Slider(0, 100, 1);
 		slider.valueProperty().addListener((observable, oldV, newV) -> {
-			System.out.println(newV.toString());
+            if (!timeSlider.isValueChanging()) {
+                double currentTime = player.getCurrentTime().toSeconds();
+                if (Math.abs(currentTime - newV.doubleValue()) > 10) {
+                    player.seek(Duration.seconds(newV.doubleValue()));
+                }
+            }
+		});
+		slider.valueChangingProperty().addListener((observable, wasChanging, changingNow) -> {
+			if(!changingNow)
+				player.seek(Duration.seconds(slider.getValue()));
 		});
 		return slider;
 	}
