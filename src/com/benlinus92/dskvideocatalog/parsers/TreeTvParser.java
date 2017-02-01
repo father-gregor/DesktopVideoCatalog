@@ -39,6 +39,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.benlinus92.dskvideocatalog.AppConstants;
+import com.benlinus92.dskvideocatalog.PropertiesHandler;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
@@ -57,9 +58,10 @@ public class TreeTvParser implements Parser {
 	private final static String TREE_TV_BASIC_URL = "http://tree.tv";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private final static String ID_SAMPLE = "TREE_TV_";
+	private Map<String, Integer> parserCategoryMap;
 	private List<MediaStream> mediaStreamsList;
 	private List<String> qualityList = Arrays.asList("360", "480", "720", "1080");
-	private int sessionUserId = 203;
+	private int sessionUserId = 203; //basic session id (minimal working number)
 	private String sessionKey = "";
 	private String sessionPHPSessid = "";
 	
@@ -68,6 +70,10 @@ public class TreeTvParser implements Parser {
 		mediaStreamsList = new ArrayList<>();
 		mediaStreamsList.add(MediaStream.MP4);
 		mediaStreamsList.add(MediaStream.HLS);
+		parserCategoryMap = new LinkedHashMap<>();
+		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitFilmsName(), AppConstants.CATEGORY_FILMS);
+		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitSeriesName(), AppConstants.CATEGORY_SERIES);
+		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitCartoonsName(), AppConstants.CATEGORY_CARTOONS);
 	}
 	
 	@Override
@@ -320,5 +326,13 @@ public class TreeTvParser implements Parser {
 	public List<MediaStream> getMediaStreamsList() {
 		return mediaStreamsList;
 	}
+	@Override
+	public Map<String, Integer> getParserCategoryMap() {
+		return parserCategoryMap;
+	}
 
+	@Override
+	public String getWebSiteName() {
+		return "Tree.Tv";
+	}
 }

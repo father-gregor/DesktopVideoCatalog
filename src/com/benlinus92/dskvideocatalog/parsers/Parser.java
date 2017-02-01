@@ -21,4 +21,6 @@ public interface Parser {
 	public BrowserVideoItem createBrowserVideoItemFromHtml(Element el);
 	public Map<String, String> getVideoStreamMap(VideoLink video, MediaStream type);
 	public List<MediaStream> getMediaStreamsList();
+	public Map<String, Integer> getParserCategoryMap();
+	public String getWebSiteName();
 }

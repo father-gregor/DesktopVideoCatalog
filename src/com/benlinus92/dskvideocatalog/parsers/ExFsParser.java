@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.benlinus92.dskvideocatalog.AppConstants;
+import com.benlinus92.dskvideocatalog.PropertiesHandler;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
@@ -32,11 +34,16 @@ public class ExFsParser implements Parser {
 	private final static String EXFS_BASIC_URL = "http://ex-fs.net";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.MM.yyyy");
 	private final static String ID_SAMPLE = "EX_FS_";
+	private Map<String, Integer> parserCategoryMap;
 	private List<MediaStream> mediaStreamsList;
 	
 	public ExFsParser() {
 		mediaStreamsList = new ArrayList<>();
 		mediaStreamsList.add(MediaStream.M3U8);
+		parserCategoryMap = new LinkedHashMap<>();
+		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitFilmsName(), AppConstants.CATEGORY_FILMS);
+		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitSeriesName(), AppConstants.CATEGORY_SERIES);
+		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitCartoonsName(), AppConstants.CATEGORY_CARTOONS);
 	}
 
 	@Override
@@ -144,6 +151,16 @@ public class ExFsParser implements Parser {
 	@Override
 	public List<MediaStream> getMediaStreamsList() {
 		return mediaStreamsList;
+	}
+
+	@Override
+	public Map<String, Integer> getParserCategoryMap() {
+		return parserCategoryMap;
+	}
+
+	@Override
+	public String getWebSiteName() {
+		return "EX-FS.net";
 	}
 
 }
