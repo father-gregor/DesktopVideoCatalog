@@ -3,7 +3,6 @@
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -15,15 +14,7 @@
                <children>
                   <VBox layoutY="54.0" prefHeight="544.0" prefWidth="239.0" spacing="1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="54.0">
                      <children>
-                        <Accordion fx:id="webSitesSectionPane" prefHeight="154.0" prefWidth="239.0">
-                          <panes>
-                            <TitledPane fx:id="treeTvPane" animated="false" contentDisplay="TOP" text="Tree.Tv">
-                                 <content>
-                                    <VBox alignment="TOP_CENTER" prefHeight="93.0" prefWidth="189.0" />
-                                 </content></TitledPane>
-                            <TitledPane fx:id="exfsPane" animated="false" text="EX-FS.net" />
-                          </panes>
-                        </Accordion>
+                        <Accordion fx:id="webSitesSectionPane" prefHeight="154.0" prefWidth="239.0" />
                      </children>
                   </VBox>
                   <Button fx:id="backButton" layoutX="174.0" layoutY="14.0" mnemonicParsing="false" text="Back" />
