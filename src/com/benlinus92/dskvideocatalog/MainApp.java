@@ -30,6 +30,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class MainApp extends Application {
 
@@ -143,6 +144,7 @@ public class MainApp extends Application {
 			BorderPane mediaPlayerPane = (BorderPane)fxml.load();
 			MediaPlayerController mediaPlayer = fxml.getController();
 			playerStage = new Stage();
+			//playerStage.initStyle(StageStyle.TRANSPARENT);
 			mediaPlayer.setMainApp(this);
 			mediaPlayer.initializeMediaPlayer(video, streamType);
 			mediaPlayerPane.setStyle("-fx-background-color: Black");

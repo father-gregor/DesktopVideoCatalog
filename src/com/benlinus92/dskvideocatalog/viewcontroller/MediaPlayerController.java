@@ -17,6 +17,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,11 +39,13 @@ public class MediaPlayerController {
 	private MainApp mainApp;
 	private MediaPlayer player = null;
 	private Slider timeSlider;
-	private DoubleProperty timeProperty;
+	private Label timeTextLabel;
 	private EventHandler<MouseEvent> enteredButton;
 	private EventHandler<MouseEvent> exitedButton;
 	private ChangeListener<Duration> timeListener;
 	private volatile Map<String, String> availableStreams = new LinkedHashMap<>(); 
+	private String videoName;
+	private String streamName;
 	private Thread backgroundThread = null;
 	@FXML
 	private MediaView playerView;
@@ -72,8 +75,8 @@ public class MediaPlayerController {
 		};
 		toolbarBox.setStyle("-fx-background-color:" + TOOLBAR_COLOR);
 		timeSlider = createTimeSlider();
-		timeProperty = new SimpleDoubleProperty(0);
 		timeListener = (observable, oldV, newV) -> {
+			timeTextLabel.setText(formatTime(player.getCurrentTime(), player.getTotalDuration()));
 			if(!timeSlider.isValueChanging())
 				timeSlider.setValue(newV.toSeconds());
 		};
@@ -81,6 +84,8 @@ public class MediaPlayerController {
 		createToolbar();
 	}
 	public void initializeMediaPlayer(VideoLink video, MediaStream streamType) {
+		videoName = video.getVideoName();
+		streamName = streamType.toString();
 		Runnable task = new Runnable() {		
 			@Override
 			public void run() {
@@ -90,7 +95,6 @@ public class MediaPlayerController {
 					public void run() {
 						Media media = new Media(availableStreams.get("480"));
 						player = new MediaPlayer(media);
-						//System.out.println(media.getError().getMessage());
 						player.setAutoPlay(true);
 						player.setMute(true);
 						player.currentTimeProperty().addListener(timeListener);
@@ -102,6 +106,7 @@ public class MediaPlayerController {
 						playerView.setMediaPlayer(player);
 						playerView.setFitHeight(media.getHeight());
 						playerView.setFitWidth(media.getWidth());
+						mainApp.getPlayerStage().setTitle(videoName + " " + streamName);
 						//((BorderPane)playerView.getParent()).setPrefWidth(1000);
 						//((BorderPane)playerView.getParent()).setPrefHeight(media.getHeight());
 					}
@@ -113,7 +118,7 @@ public class MediaPlayerController {
 			backgroundThread.setDaemon(true);
 			backgroundThread.start();
 		}
-		if(streamType == MediaStream.HLS) { }
+		//if(streamType == MediaStream.HLS) { }
 	}
 	public void createToolbar() {
 		HBox buttonsBox = new HBox();
@@ -163,6 +168,9 @@ public class MediaPlayerController {
 				mainApp.getPlayerStage().setFullScreen(true);
 		});
 		buttonsBox.getChildren().add(newButton);
+		
+		timeTextLabel = new Label();
+		buttonsBox.getChildren().add(timeTextLabel);
 		toolbarBox.getChildren().add(buttonsBox);
 	}
 	
@@ -175,12 +183,13 @@ public class MediaPlayerController {
 		return newButton;
 	}
 	private Slider createTimeSlider() {
-		Slider slider = new Slider(0, 100, 1);
+		Slider slider = new Slider(0, 100, 0);
 		slider.valueProperty().addListener((observable, oldV, newV) -> {
             if (!timeSlider.isValueChanging()) {
                 double currentTime = player.getCurrentTime().toSeconds();
                 if (Math.abs(currentTime - newV.doubleValue()) > 10) {
                     player.seek(Duration.seconds(newV.doubleValue()));
+                    //timeTextLabel.setText(formatTime(player.getCurrentTime(), player.getTotalDuration()));
                 }
             }
 		});
@@ -190,6 +199,40 @@ public class MediaPlayerController {
 		});
 		return slider;
 	}
+	private static String formatTime(Duration elapsed, Duration duration) {
+		int elapsedInt = (int)Math.floor(elapsed.toSeconds());
+		int elapsedHours = elapsedInt / (60 * 60);
+		if(elapsedHours > 0)
+			elapsedInt -= elapsedHours * 60 * 60;
+		int elapsedMinutes = elapsedInt / 60;
+		int elapsedSeconds = elapsedInt - elapsedHours * 60 * 60 - elapsedMinutes * 60;
+		if(duration.greaterThan(Duration.ZERO)) {
+			int durationInt = (int) Math.floor(duration.toSeconds());
+			int durationHours = durationInt / (60 * 60);
+			if(durationHours > 0)
+				durationInt -= durationHours * 60 * 60;
+			int durationMinutes = durationInt / 60;
+			int durationSeconds = durationInt - durationHours * 60 * 60 
+					- durationMinutes * 60;
+			if(durationHours > 0) {
+		         return String.format("%d:%02d:%02d/%d:%02d:%02d", 
+		        		 elapsedHours, elapsedMinutes, elapsedSeconds,
+		        		 durationHours, durationMinutes, durationSeconds);
+			} else {
+		          return String.format("%02d:%02d/%02d:%02d",
+		                  elapsedMinutes, elapsedSeconds,durationMinutes, 
+		                      durationSeconds);
+			}
+		} else {
+			if(elapsedHours > 0) 
+				return String.format("%d:%02d:%02d", elapsedHours, 
+	                     elapsedMinutes, elapsedSeconds);
+			else
+				return String.format("%02d:%02d",elapsedMinutes, 
+	                    elapsedSeconds);
+		}
+	}
+	
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
 	}
