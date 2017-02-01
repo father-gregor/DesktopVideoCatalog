@@ -75,13 +75,13 @@ public class PropertiesHandler {
 	public String getImageViewerWindowProp() {
 		return imageViewerWindowProp;
 	}
-	public String getFilmsUnitName() {
+	public String getUnitFilmsName() {
 		return appUnitsBundle.getString("unit.films");
 	}
-	public String getSeriesUnitName() {
+	public String getUnitSeriesName() {
 		return appUnitsBundle.getString("unit.series");
 	}
-	public String getCartoonsUnitName() {
+	public String getUnitCartoonsName() {
 		return appUnitsBundle.getString("unit.cartoons");
 	}
 }
