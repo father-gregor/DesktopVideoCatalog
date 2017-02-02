@@ -33,7 +33,6 @@ public class ExFsParser implements Parser {
 	private final static String EXFS_CARTOONS_URL = "http://ex-fs.net/cartoon/page/";
 	private final static String EXFS_BASIC_URL = "http://ex-fs.net";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.MM.yyyy");
-	private final static String ID_SAMPLE = "EX_FS_";
 	private Map<String, Integer> parserCategoryMap;
 	private List<MediaStream> mediaStreamsList;
 	
@@ -52,7 +51,7 @@ public class ExFsParser implements Parser {
 		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", AppConstants.USER_AGENT); 
 		HttpResponse response = client.execute(request);
-		System.out.println(response.getStatusLine().getStatusCode());
+		System.out.println(EXFS_BASIC_URL + " -  status " + response.getStatusLine().getStatusCode());
 		BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 		String line = null;
 		StringBuilder sb = new StringBuilder();
@@ -98,7 +97,6 @@ public class ExFsParser implements Parser {
 			item.setAddedDate(LocalDate.now().minusDays(1));
 		else
 			item.setAddedDate(LocalDate.parse(date, DATE_FORMAT));
-		item.setId(ID_SAMPLE);
 		return item;
 	}
 

@@ -57,7 +57,6 @@ public class TreeTvParser implements Parser {
 	private final static String TREE_TV_CARTOONS = "http://tree.tv/multfilms/sortType/new/page/";
 	private final static String TREE_TV_BASIC_URL = "http://tree.tv";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private final static String ID_SAMPLE = "TREE_TV_";
 	private Map<String, Integer> parserCategoryMap;
 	private List<MediaStream> mediaStreamsList;
 	private List<String> qualityList = Arrays.asList("360", "480", "720", "1080");
@@ -67,9 +66,7 @@ public class TreeTvParser implements Parser {
 	
 	public TreeTvParser() {
 		sessionUserId = generateUserId(); 
-		mediaStreamsList = new ArrayList<>();
-		mediaStreamsList.add(MediaStream.MP4);
-		mediaStreamsList.add(MediaStream.HLS);
+		mediaStreamsList = Arrays.asList(MediaStream.MP4, MediaStream.HLS);
 		parserCategoryMap = new LinkedHashMap<>();
 		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitFilmsName(), AppConstants.CATEGORY_FILMS);
 		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitSeriesName(), AppConstants.CATEGORY_SERIES);
@@ -82,7 +79,7 @@ public class TreeTvParser implements Parser {
 		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", AppConstants.USER_AGENT); 
 		HttpResponse response = client.execute(request);
-		System.out.println(response.getStatusLine().getStatusCode());
+		System.out.println(TREE_TV_BASIC_URL + " -  status " + response.getStatusLine().getStatusCode());
 		for(Header header: Arrays.asList(response.getHeaders("Set-Cookie"))) {
 			if(header.getValue().contains("key=")) {
 				sessionKey = header.getValue().split(";")[0];
@@ -134,7 +131,6 @@ public class TreeTvParser implements Parser {
 		}
 		item.setYear(el.select("div.smoll_year").text());
 		item.setAddedDate(LocalDate.parse(el.select("div.date_create span").text(), DATE_FORMAT));
-		item.setId(ID_SAMPLE);
 		return item;
 	}
 	private String getMp4StreamUrl(String videoId, String quality) {
