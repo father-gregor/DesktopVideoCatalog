@@ -9,22 +9,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class SimpleVideoItem {
-	private StringProperty id = new SimpleStringProperty("");
 	private StringProperty title = new SimpleStringProperty("");
 	private StringProperty year = new SimpleStringProperty("");
 	private StringProperty url = new SimpleStringProperty("");
 	private StringProperty prevImg = new SimpleStringProperty("");
 	private ObjectProperty<LocalDate> addedDate = new SimpleObjectProperty<LocalDate>(LocalDate.MIN);
 	
-	public String getId() {
-		return id.get();
-	}
-	public StringProperty idProperty() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id.set(id + System.currentTimeMillis());
-	}
 	public String getTitle() {
 		return title.get();
 	}
