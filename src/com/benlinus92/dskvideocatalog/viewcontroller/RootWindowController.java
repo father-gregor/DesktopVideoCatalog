@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import com.benlinus92.dskvideocatalog.MainApp;
 import com.benlinus92.dskvideocatalog.parsers.ExFsParser;
+import com.benlinus92.dskvideocatalog.parsers.KinogoClubParser;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 
@@ -31,7 +32,7 @@ public class RootWindowController {
 	private Button backButton;
 	@FXML
 	private void initialize() {
-		List<Parser> parsersList = Arrays.asList(new TreeTvParser(), new ExFsParser());//add all parsers there
+		List<Parser> parsersList = Arrays.asList(new TreeTvParser(), new KinogoClubParser(), new ExFsParser());//add all parsers there
 		backButton.setOnAction(e -> {
 			setRightSidePane(mainApp.getCurrentState().getPaneState());
 			mainApp.setCurrentParser(mainApp.getCurrentState().getParserState());
