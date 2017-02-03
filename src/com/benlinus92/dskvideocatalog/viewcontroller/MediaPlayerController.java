@@ -94,9 +94,11 @@ public class MediaPlayerController {
 					@Override
 					public void run() {
 						Media media = new Media(availableStreams.get("480"));
+						//Media media = new Media("file:///E:/Media/index.m3u8");
+						//System.out.println(media.getError().getMessage());
 						player = new MediaPlayer(media);
 						player.setAutoPlay(true);
-						player.setMute(true);
+						//player.setMute(true);
 						player.currentTimeProperty().addListener(timeListener);
 						player.setOnReady(() -> {
 							timeSlider.setValue(0);

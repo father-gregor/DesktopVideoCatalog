@@ -3,6 +3,7 @@ package com.benlinus92.dskvideocatalog.parsers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,6 +33,10 @@ import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
+import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class KinogoClubParser implements Parser {
 	private final static String KINOGO_BASIC_URL = "http://kinogo.club";
@@ -167,24 +173,109 @@ public class KinogoClubParser implements Parser {
 				item.setCast(list);
 			}
 		}
-		Pattern regex = Pattern.compile("decode[(]'([\\S]+)'[)]");
-		Matcher m = regex.matcher(el.select("div.box.visible script").html());
-		if(m.find()) {
-			decodeBase64VideoUrlList(m.group(1));
+		try{
+			Pattern regex = Pattern.compile("decode[(]'([\\S]+)'[)]");
+			Matcher m = regex.matcher(el.select("div.box.visible script").html());
+			if(m.find()) {
+				VideoTranslationType videoTr = new VideoTranslationType();
+				videoTr.setVideosList(decodeBase64VideoUrlList(m.group(1)));
+				videoTr.setType(item.getTitle());
+				List<VideoTranslationType> videoList = new ArrayList<>();
+				videoList.add(videoTr);
+				item.setVideoTransTypeList(videoList);
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
 		}
-		
 		return item;
 	}
-	private String decodeBase64VideoUrlList(String strBase64) {
+	private List<VideoLink> decodeBase64VideoUrlList(String strBase64) throws IOException {
 		String decodedStr = new String(Base64.getDecoder().decode(strBase64), StandardCharsets.UTF_8);
+		List<VideoLink> urlList = new ArrayList<>();
+		Pattern regex = Pattern.compile("file=([\\S]+)&amp");
+		Matcher m = regex.matcher(decodedStr);
+		if(m.find()) {
+			decodedStr = decodeTextViaHash(m.group(1));
+			VideoLink video = new VideoLink();
+			video.setLink(decodedStr);
+			regex = Pattern.compile("hq[\\d]+/([\\S]+?\\.flv)");
+			m = regex.matcher(decodedStr); m.find();
+			video.setName(m.group(1));
+			urlList.add(video);
+		} else { //file= params not found, that mean there is a link to the txt file in decodedStr
+			regex = Pattern.compile("pl=([\\S]+.txt)");
+			m = regex.matcher(decodedStr);
+			if(m.find()) {
+				HttpClient client = HttpClientBuilder.create().build();
+				HttpGet request = new HttpGet(m.group(1));
+				request.addHeader("User-Agent", AppConstants.USER_AGENT); 
+				HttpResponse response = client.execute(request);
+				BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+				String line = "";
+				String fileContent = "";
+				while((line = br.readLine()) != null)
+					fileContent = fileContent + line;
+				JsonParser jParser = new JsonParser();
+				System.out.println("CONTENT " + fileContent);
+				JsonObject jsobObj = jParser.parse(fileContent).getAsJsonObject();
+				for(JsonElement elem: jsobObj.get("playlist").getAsJsonArray()) {
+					VideoLink video = new VideoLink();
+					video.setLink(elem.getAsJsonObject().get("file").getAsString());
+					regex = Pattern.compile("\\/([a-zA-Z0-9_-]+?\\.flv)$");
+					m = regex.matcher(video.getLink()); m.find();
+					video.setName(m.group(1));
+					urlList.add(video);
+				}
+			}
+			
+		}
 		System.out.println(decodedStr);
-		return null;
+		return urlList;
 	}
-
+	private String decodeTextViaHash(String data) {
+		String hash = "0123456789WGXMHRUZID=NQVBLihbzaclmepsJxdftioYkngryTwuvihv7ec41D6GpBtXx3QJRiN5WwMf=ihngU08IuldVHosTmZz9kYL2bayE";
+		data = data.replace("tQ3N", "");//remove "garbage part", which interfere decoding
+		data = decodeUppodData(data, "r", "A");
+		data = data.replace("\n", "");
+		String[] hashArr = hash.split("ih");
+		String a = "";
+		String b = "";
+		if(data.substring(data.length() - 1) == "!") {
+			data = data.substring(0, data.length() - 1);
+			a = hashArr[3];
+			b = hashArr[2];
+		} else {
+			a = hashArr[1];
+			b = hashArr[0];
+		}
+		for(int i = 0; i < a.length(); i++) {
+			data = data.replaceAll(b.substring(i, i + 1), "__");
+			data = data.replaceAll(a.substring(i, i + 1), b.substring(i, i + 1));
+			data = data.replaceAll("__", a.substring(i, i + 1));
+		}
+		return new String(Base64.getDecoder().decode(data));
+	}
+	private String decodeUppodData(String data, String ch1, String ch2) { //flash player's name
+		if((data.substring(data.length() - 2, data.length() - 1) == ch1) && (data.substring(2, 3) == ch2)) {
+			String srev = new StringBuilder(data).reverse().toString();
+			int loc3 = Integer.parseInt(srev.substring(srev.length() - 2)) / 2;
+			srev = srev.substring(2, srev.length() - 5);
+			if(loc3 < srev.length()) {
+				int ind = loc3;
+				while(ind < srev.length()) {
+					srev = srev.substring(0, ind) + srev.substring(ind + 1);
+					ind += loc3;
+				}
+			}
+			data = srev + "!";
+		}
+		return data;
+	}
 	@Override
 	public Map<String, String> getVideoStreamMap(VideoLink video, MediaStream type) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String, String> availableVideoMap = new LinkedHashMap<>();
+		availableVideoMap.put("480", video.getLink());
+		return availableVideoMap;
 	}
 
 	@Override
