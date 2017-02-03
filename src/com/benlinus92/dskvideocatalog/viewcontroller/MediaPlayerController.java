@@ -54,19 +54,6 @@ public class MediaPlayerController {
 	@FXML
 	public void initialize() {
 		backgroundThread = new Thread();
-		playerView.setOnMouseClicked(me -> {
-			if(player != null && me.getButton().toString() == MouseButton.PRIMARY.toString()) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						if(player.getStatus() == MediaPlayer.Status.PLAYING)
-							player.pause();
-						else if(player.getStatus() == MediaPlayer.Status.PAUSED)
-							player.play();
-					}
-				});
-			}
-		});
 		enteredButton = (me) -> {
 			((Button)me.getSource()).setStyle("-fx-background-color:#a4adbc");
 		};
@@ -86,6 +73,19 @@ public class MediaPlayerController {
 	public void initializeMediaPlayer(VideoLink video, MediaStream streamType) {
 		videoName = video.getVideoName();
 		streamName = streamType.toString();
+		playerView.addEventHandler(MouseEvent.MOUSE_CLICKED, me -> {
+			if(player != null && me.getButton().toString() == MouseButton.PRIMARY.toString()) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						if(player.getStatus() == MediaPlayer.Status.PLAYING)
+							player.pause();
+						else if(player.getStatus() == MediaPlayer.Status.PAUSED)
+							player.play();
+					}
+				});
+			}
+		});
 		Runnable task = new Runnable() {		
 			@Override
 			public void run() {
@@ -235,6 +235,9 @@ public class MediaPlayerController {
 		}
 	}
 	
+	public void disposeMediaPlayer() {
+		player.dispose();
+	}
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
 	}

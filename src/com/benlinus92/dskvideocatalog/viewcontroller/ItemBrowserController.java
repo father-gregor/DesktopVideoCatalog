@@ -26,13 +26,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 public class ItemBrowserController {
 
 	private MainApp mainApp;
 	private String currentItemUrl;
-	private BrowserVideoItem currentVideoItem;
 	@FXML private TabPane tabPane;
 	@FXML private ScrollPane linksPane;
 	@FXML private ImageView posterImage;
@@ -135,6 +135,10 @@ public class ItemBrowserController {
 	}
 	public void setMainApp(MainApp app) {
 		this.mainApp = app;
+	}
+	public void setLinksTabContent(Pane tab) {
+		tab.setPrefWidth(linksPane.getWidth());
+		linksPane.setContent(tab);
 	}
 	private class MediaStreamListOpenedEventHandler implements EventHandler<MouseEvent> {
 		@Override

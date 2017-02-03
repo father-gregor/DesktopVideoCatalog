@@ -34,9 +34,13 @@ public class RootWindowController {
 	private void initialize() {
 		List<Parser> parsersList = Arrays.asList(new TreeTvParser(), new KinogoClubParser(), new ExFsParser());//add all parsers there
 		backButton.setOnAction(e -> {
-			setRightSidePane(mainApp.getCurrentState().getPaneState());
-			mainApp.setCurrentParser(mainApp.getCurrentState().getParserState());
-			mainApp.changeCategory(mainApp.getCurrentState().getCategoryState());
+			if(mainApp.getCurrentState().getPaneState() != null) {
+				setRightSidePane(mainApp.getCurrentState().getPaneState());
+				if(mainApp.getCurrentState().getPaneState() == mainApp.getCatalogPane())
+					mainApp.getCurrentState().setPaneState(null);;
+				mainApp.setCurrentParser(mainApp.getCurrentState().getParserState());
+				mainApp.getCatalogController().setCurrentCategory(mainApp.getCurrentState().getCategoryState());
+			}
 		});
 		EventHandler<MouseEvent> categoryClickedEvent = new EventHandler<MouseEvent>() {
 			@Override

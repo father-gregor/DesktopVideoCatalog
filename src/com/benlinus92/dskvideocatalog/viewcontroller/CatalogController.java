@@ -154,7 +154,7 @@ public class CatalogController {
 			mainApp.openItemBrowser(((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getUrl());
 			System.out.println("Cleared");
 			System.out.println("MEMORY: " + mainApp.getRuntime().freeMemory());
-			mainTilePane.getChildren().clear();
+			//mainTilePane.getChildren().clear();
 			System.out.println("MEMORY: " + mainApp.getRuntime().freeMemory());
 		}
 	}
