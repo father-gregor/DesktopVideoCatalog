@@ -37,6 +37,7 @@ import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public class KinogoClubParser implements Parser {
 	private final static String KINOGO_BASIC_URL = "http://kinogo.club";
@@ -217,14 +218,18 @@ public class KinogoClubParser implements Parser {
 					fileContent = fileContent + line;
 				JsonParser jParser = new JsonParser();
 				System.out.println("CONTENT " + fileContent);
-				JsonObject jsobObj = jParser.parse(fileContent).getAsJsonObject();
-				for(JsonElement elem: jsobObj.get("playlist").getAsJsonArray()) {
-					VideoLink video = new VideoLink();
-					video.setLink(elem.getAsJsonObject().get("file").getAsString());
-					regex = Pattern.compile("\\/([a-zA-Z0-9_-]+?\\.flv)$");
-					m = regex.matcher(video.getLink()); m.find();
-					video.setName(m.group(1));
-					urlList.add(video);
+				try {
+					JsonObject jsobObj = jParser.parse(fileContent).getAsJsonObject();
+					for(JsonElement elem: jsobObj.get("playlist").getAsJsonArray()) {
+						VideoLink video = new VideoLink();
+						video.setLink(elem.getAsJsonObject().get("file").getAsString());
+						regex = Pattern.compile("\\/([a-zA-Z0-9_-]+?\\.flv)$");
+						m = regex.matcher(video.getLink()); m.find();
+						video.setName(m.group(1));
+						urlList.add(video);
+					}
+				} catch(JsonSyntaxException e) {
+					e.printStackTrace();
 				}
 			}
 			

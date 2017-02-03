@@ -12,7 +12,7 @@ public class CatalogStateHandler {
 	public CatalogStateHandler() {
 		categoryState = 1;
 		parserState = new TreeTvParser();
-		paneState = new Pane();
+		paneState = null;
 	}
 	public int getCategoryState() {
 		return categoryState;
@@ -20,6 +20,9 @@ public class CatalogStateHandler {
 	public void setCatalogState(int categoryState, Parser parserState, Pane paneState) {
 		this.categoryState = categoryState;
 		this.parserState = parserState;
+		this.paneState = paneState;
+	}
+	public void setPaneState(Pane paneState) {
 		this.paneState = paneState;
 	}
 	public Parser getParserState() {

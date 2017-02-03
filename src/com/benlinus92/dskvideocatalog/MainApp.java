@@ -1,5 +1,7 @@
 package com.benlinus92.dskvideocatalog;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,7 @@ import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 import com.benlinus92.dskvideocatalog.viewcontroller.CatalogController;
+import com.benlinus92.dskvideocatalog.viewcontroller.ChooseMediaMenuController;
 import com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController;
 import com.benlinus92.dskvideocatalog.viewcontroller.MediaPlayerController;
 import com.benlinus92.dskvideocatalog.viewcontroller.RootWindowController;
@@ -29,6 +32,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -126,17 +130,20 @@ public class MainApp extends Application {
 	}
 	public void initVideoListLayout(VideoTranslationType videoItem, MediaStream streamType) {
 		try {
+			//Desktop.getDesktop().open(new File("E:/Media/se-12-01_lostfilm.flv"));
 			FXMLLoader fxml = new FXMLLoader();
 			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getVideoListViewProp()));
 			AnchorPane videoListPane = (AnchorPane)fxml.load();
 			videoList = fxml.getController();
 			videoList.setMainApp(this);
 			videoList.initializeVideoList(videoItem, streamType);
-			primaryStage.setScene(new Scene(videoListPane));
+			itemBrowser.setLinksTabContent(videoListPane);
+			//primaryStage.setScene(new Scene(videoListPane));
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
+
 	public void initMediaPlayerLayout(VideoLink video, MediaStream streamType) {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
@@ -153,6 +160,8 @@ public class MainApp extends Application {
 			playerStage.setScene(videoScene);
 			playerStage.setTitle("Player");
 			playerStage.setOnCloseRequest(e -> {
+				mediaPlayer.disposeMediaPlayer();
+				mediaPlayerPane.getChildren().clear();
 				((Stage)e.getSource()).setScene(null);
 			});
 			playerStage.show();
@@ -165,6 +174,7 @@ public class MainApp extends Application {
 	}
 	public void changeCategory(int category) {
 		catalog.updateCatalogWithNewCategory(category);
+		catalog.setCurrentCategory(category);
 	}
 	public void openItemBrowser(String url) {
 		currentState.setCatalogState(catalog.getCurrentCategory(), currentParser, catalogLayout);

@@ -17,6 +17,7 @@ public class PropertiesHandler {
 	private String imageViewerWindowProp = "";
 	private String videoListViewProp = "";
 	private String mediaPlayerViewProp = "";
+	private String mediaMenuViewProp = "";
 	private ResourceBundle appUnitsBundle;
 	
 	public static PropertiesHandler getInstance() {
@@ -37,6 +38,7 @@ public class PropertiesHandler {
 				imageViewerWindowProp = prop.getProperty("view.imageviewerwindow");
 				videoListViewProp = prop.getProperty("view.videolist");
 				mediaPlayerViewProp = prop.getProperty("view.mediaplayer");
+				mediaMenuViewProp = prop.getProperty("view.choosemediamenu");
 				Locale locale = new Locale(prop.getProperty("locale.lang"), prop.getProperty("locale.country"));
 				appUnitsBundle = ResourceBundle.getBundle(fileLocale, locale);
 			}
@@ -75,6 +77,9 @@ public class PropertiesHandler {
 	public String getImageViewerWindowProp() {
 		return imageViewerWindowProp;
 	}
+	public String getMediaMenuViewProp() {
+		return mediaMenuViewProp;
+	}
 	public String getUnitFilmsName() {
 		return appUnitsBundle.getString("unit.films");
 	}
@@ -83,5 +88,17 @@ public class PropertiesHandler {
 	}
 	public String getUnitCartoonsName() {
 		return appUnitsBundle.getString("unit.cartoons");
+	}
+	public String getInternalPlayerLabel() {
+		return appUnitsBundle.getString("label.internalplayer");
+	}
+	public String getWebPlayerLabel() {
+		return appUnitsBundle.getString("label.webplayer");
+	}
+	public String getDefaultPlayerLabel() {
+		return appUnitsBundle.getString("label.defaultplayer");
+	}
+	public String getCopyLinkLabel() {
+		return appUnitsBundle.getString("label.copylink");
 	}
 }
