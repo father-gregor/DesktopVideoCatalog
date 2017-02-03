@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" prefHeight="198.0" prefWidth="306.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benlinus92.dskvideocatalog.viewcontroller.ChooseMediaMenuController">
+   <children>
+      <Label fx:id="internalPlayerLabel" alignment="CENTER" prefHeight="50.0" prefWidth="308.0" text="Label" />
+      <Label fx:id="webPlayerLabel" alignment="CENTER" prefHeight="50.0" prefWidth="319.0" text="Label" />
+      <Label fx:id="userDefaultPlayerLabel" alignment="CENTER" prefHeight="50.0" prefWidth="306.0" text="Label" />
+      <Label fx:id="copyLinkLabel" alignment="CENTER" prefHeight="47.0" prefWidth="307.0" text="Label" />
+   </children>
+</VBox>
