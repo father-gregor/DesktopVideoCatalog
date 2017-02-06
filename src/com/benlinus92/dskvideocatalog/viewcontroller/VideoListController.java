@@ -36,22 +36,15 @@ public class VideoListController {
 	private MainApp mainApp;
 	private VideoLink selectedVideo; 
 	private MediaStream streamType;
-	private VBox videoListBox;
 	private volatile Map<String, String> availableStreams;
 	private Stage mediaMenuStage;
 	@FXML
 	private ScrollPane listScrollPane;
-	//@FXML
-	//private Button backButton;
 	@FXML
 	private AnchorPane listPane;
 	@FXML
 	private void initialize() {
-		videoListBox = new VBox();
-		/*backButton.setOnMouseClicked(me -> {
-			videoListBox.getChildren().clear();
-			mainApp.openMainWindow();
-		});*/
+		
 	}
 	public void initializeVideoList(VideoTranslationType videoItem, MediaStream streamType) {
 		this.streamType = streamType;
@@ -82,8 +75,12 @@ public class VideoListController {
 				mediaMenuPane.getChildren().clear();
 				((Stage)e.getSource()).setScene(null);
 			});
-			mediaMenuStage.initModality(Modality.APPLICATION_MODAL);
 			mediaMenuStage.setScene(new Scene(mediaMenuPane));
+			mediaMenuStage.initOwner(mainApp.getPrimaryStage());
+			mediaMenuStage.focusedProperty().addListener((observable, wasFocused, isNowFocused) -> {
+				if(!isNowFocused)
+					mediaMenuStage.fireEvent(new WindowEvent(mediaMenuStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+			});
 			mediaMenuStage.show();
 		} catch(IOException e) {
 			e.printStackTrace();

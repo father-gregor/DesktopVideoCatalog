@@ -138,7 +138,6 @@ public class MainApp extends Application {
 			videoList.setMainApp(this);
 			videoList.initializeVideoList(videoItem, streamType);
 			itemBrowser.setLinksTabContent(videoListPane);
-			//primaryStage.setScene(new Scene(videoListPane));
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
