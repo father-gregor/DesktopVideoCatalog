@@ -1,8 +1,12 @@
 package com.benlinus92.dskvideocatalog.viewcontroller;
 
 import java.awt.Desktop;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -27,6 +31,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -36,6 +42,7 @@ public class VideoListController {
 	private MainApp mainApp;
 	private VideoLink selectedVideo; 
 	private MediaStream streamType;
+	private WebView webPlayer;
 	private volatile Map<String, String> availableStreams;
 	private Stage mediaMenuStage;
 	@FXML
@@ -90,6 +97,22 @@ public class VideoListController {
 		mediaMenuStage.fireEvent(new WindowEvent(mediaMenuStage, WindowEvent.WINDOW_CLOSE_REQUEST));
 		mainApp.initMediaPlayerLayout(selectedVideo, streamType);
 	}
+	public void openWebPlayer() {
+		mediaMenuStage.fireEvent(new WindowEvent(mediaMenuStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+		try {
+			Stage webStage = new Stage();
+			webPlayer = new WebView();
+			WebEngine engine = webPlayer.getEngine();
+			String htmlContent = streamToString(getClass().getClassLoader()
+					.getResourceAsStream(PropertiesHandler.getInstance().getWebPlayerHtmlProp()));
+			webPlayer.getEngine().loadContent(htmlContent);
+			Scene webScene = new Scene(webPlayer, 600, 400);
+			webStage.setScene(webScene);
+			webStage.show();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
 	public void openUserDefaultPlayer() {
 		Runnable task = new Runnable() {
 			@Override
@@ -112,7 +135,7 @@ public class VideoListController {
 		Thread backgroundThread = new Thread(task);
 		backgroundThread.start();
 	}
-	public void copyLinkToClipBoard() {
+	public void copyLinkToClipboard() {
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
@@ -131,6 +154,15 @@ public class VideoListController {
 		};
 		Thread backgroundThread = new Thread(task);
 		backgroundThread.start();
+	}
+	public String streamToString(InputStream stream) throws IOException, UnsupportedEncodingException {
+		ByteArrayOutputStream str = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int length;
+		while((length = stream.read(buffer)) != -1)
+			str.write(buffer, 0, length);
+		return str.toString("UTF-8");
+		
 	}
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;

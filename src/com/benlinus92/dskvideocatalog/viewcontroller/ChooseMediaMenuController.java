@@ -34,7 +34,7 @@ public class ChooseMediaMenuController {
 		webPlayerLabel.setOnMouseClicked(me -> {
 			if(me.getButton().toString() == MouseButton.PRIMARY.toString()) {
 				System.out.println("WEB PLAYER");
-				
+				mainCaller.openWebPlayer();
 			}
 		});
 		userDefaultPlayerLabel.setOnMouseClicked(me -> {
@@ -46,7 +46,7 @@ public class ChooseMediaMenuController {
 		copyLinkLabel.setOnMouseClicked(me -> {
 			if(me.getButton().toString() == MouseButton.PRIMARY.toString()) {
 				System.out.println("COPY LINK");
-				mainCaller.copyLinkToClipBoard();
+				mainCaller.copyLinkToClipboard();
 			}
 		});
 	}
