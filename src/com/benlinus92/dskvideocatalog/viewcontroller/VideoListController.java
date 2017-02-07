@@ -18,6 +18,8 @@ import com.benlinus92.dskvideocatalog.model.VideoLink;
 import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -106,7 +108,13 @@ public class VideoListController {
 			String htmlContent = streamToString(getClass().getClassLoader()
 					.getResourceAsStream(PropertiesHandler.getInstance().getWebPlayerHtmlProp()));
 			webPlayer.getEngine().loadContent(htmlContent);
-			Scene webScene = new Scene(webPlayer, 600, 400);
+			webPlayer.getEngine().getLoadWorker().exceptionProperty().addListener(new ChangeListener<Throwable>() {
+			    @Override
+			    public void changed(ObservableValue<? extends Throwable> ov, Throwable t, Throwable t1) {
+			        System.out.println("Received exception: "+t1.getMessage());
+			    }
+			});
+			Scene webScene = new Scene(webPlayer, 700, 500);
 			webStage.setScene(webScene);
 			webStage.show();
 		} catch(IOException e) {

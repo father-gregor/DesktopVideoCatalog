@@ -18,6 +18,7 @@ public class PropertiesHandler {
 	private String videoListViewProp = "";
 	private String mediaPlayerViewProp = "";
 	private String mediaMenuViewProp = "";
+	private String webPlayerHtmlProp = "";
 	private ResourceBundle appUnitsBundle;
 	
 	public static PropertiesHandler getInstance() {
@@ -39,6 +40,7 @@ public class PropertiesHandler {
 				videoListViewProp = prop.getProperty("view.videolist");
 				mediaPlayerViewProp = prop.getProperty("view.mediaplayer");
 				mediaMenuViewProp = prop.getProperty("view.choosemediamenu");
+				webPlayerHtmlProp = prop.getProperty("html.webplayer");
 				Locale locale = new Locale(prop.getProperty("locale.lang"), prop.getProperty("locale.country"));
 				appUnitsBundle = ResourceBundle.getBundle(fileLocale, locale);
 			}
@@ -79,6 +81,9 @@ public class PropertiesHandler {
 	}
 	public String getMediaMenuViewProp() {
 		return mediaMenuViewProp;
+	}
+	public String getWebPlayerHtmlProp() {
+		return webPlayerHtmlProp;
 	}
 	public String getUnitFilmsName() {
 		return appUnitsBundle.getString("unit.films");
