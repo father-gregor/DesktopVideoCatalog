@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import com.benlinus92.dskvideocatalog.JavaToJavascriptBridge;
 import com.benlinus92.dskvideocatalog.MainApp;
 import com.benlinus92.dskvideocatalog.PropertiesHandler;
 import com.benlinus92.dskvideocatalog.model.MediaStream;
@@ -20,6 +21,7 @@ import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker.State;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,12 +35,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import netscape.javascript.JSObject;
 
 public class VideoListController {
 	private MainApp mainApp;
@@ -73,7 +77,7 @@ public class VideoListController {
 	public void initChooseMediaMenuLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getMediaMenuViewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.choosemediamenu")));
 			Pane mediaMenuPane = (Pane)fxml.load();
 			ChooseMediaMenuController menuCont = fxml.getController();
 			menuCont.setMainCaller(this);
@@ -104,18 +108,45 @@ public class VideoListController {
 		try {
 			Stage webStage = new Stage();
 			webPlayer = new WebView();
-			WebEngine engine = webPlayer.getEngine();
-			String htmlContent = streamToString(getClass().getClassLoader()
-					.getResourceAsStream(PropertiesHandler.getInstance().getWebPlayerHtmlProp()));
-			webPlayer.getEngine().loadContent(htmlContent);
+			webPlayer.setMinWidth(700.0);
+			//webPlayer.setMinHeight(400.0);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					availableStreams = mainApp.getCurrentParser().getVideoStreamMap(selectedVideo, streamType);
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							webPlayer.getEngine().getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
+								if(newState.equals(State.SUCCEEDED)) {
+					            	System.out.println(newState.toString());
+									JSObject window = (JSObject) webPlayer.getEngine().executeScript("window");
+									window.setMember("java", new JavaToJavascriptBridge());
+					            	window.call("setSource", (Object)availableStreams.keySet().toArray(new String[availableStreams.size()]),
+					            			availableStreams.values().toArray(), getStreamTypeForWeb(streamType));
+								}
+					        });
+						}
+					});
+					
+				}
+			}).start();
+			String content = streamToString(getClass().getClassLoader()
+					.getResourceAsStream(PropertiesHandler.getInstance().getAppProperty("html.webplayer")));
+			webPlayer.getEngine().loadContent(content);
 			webPlayer.getEngine().getLoadWorker().exceptionProperty().addListener(new ChangeListener<Throwable>() {
 			    @Override
 			    public void changed(ObservableValue<? extends Throwable> ov, Throwable t, Throwable t1) {
 			        System.out.println("Received exception: "+t1.getMessage());
 			    }
 			});
-			Scene webScene = new Scene(webPlayer, 700, 500);
+			Scene webScene = new Scene(webPlayer, 640, 400);
 			webStage.setScene(webScene);
+			webStage.setOnCloseRequest(e -> {
+				webPlayer.getEngine().executeScript("disposePlayer()");
+				webPlayer = null;
+				webStage.setScene(null);
+			});
 			webStage.show();
 		} catch(IOException e) {
 			e.printStackTrace();
@@ -171,6 +202,13 @@ public class VideoListController {
 			str.write(buffer, 0, length);
 		return str.toString("UTF-8");
 		
+	}
+	private String getStreamTypeForWeb(MediaStream type) {
+		if(type == MediaStream.MP4)
+			return "video/mp4";
+		else if(type == MediaStream.HLS)
+			return "application/x-mpegURL";
+		return null;
 	}
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;

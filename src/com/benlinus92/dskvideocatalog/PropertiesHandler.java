@@ -2,7 +2,9 @@ package com.benlinus92.dskvideocatalog;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -11,14 +13,7 @@ public class PropertiesHandler {
 	private static PropertiesHandler instance = null;
 	private String fileAppProp = "application.properties";
 	private String fileLocale = "locale/MenuUnits";
-	private String rootWindowViewProp = "";
-	private String catalogViewProp = "";
-	private String itembrowserViewProp = "";
-	private String imageViewerWindowProp = "";
-	private String videoListViewProp = "";
-	private String mediaPlayerViewProp = "";
-	private String mediaMenuViewProp = "";
-	private String webPlayerHtmlProp = "";
+	private Map<String, String> appPropertiesBundle;
 	private ResourceBundle appUnitsBundle;
 	
 	public static PropertiesHandler getInstance() {
@@ -28,19 +23,20 @@ public class PropertiesHandler {
 	}
 	private PropertiesHandler() { 
 		Properties prop = new Properties();
+		appPropertiesBundle = new LinkedHashMap<>();
 		InputStream input = null;
 		try {
 			input = this.getClass().getClassLoader().getResourceAsStream(fileAppProp);
 			if(input != null) {
 				prop.load(input);
-				rootWindowViewProp = prop.getProperty("view.rootwindow");
-				catalogViewProp = prop.getProperty("view.catalog");
-				itembrowserViewProp = prop.getProperty("view.itembrowser");
-				imageViewerWindowProp = prop.getProperty("view.imageviewerwindow");
-				videoListViewProp = prop.getProperty("view.videolist");
-				mediaPlayerViewProp = prop.getProperty("view.mediaplayer");
-				mediaMenuViewProp = prop.getProperty("view.choosemediamenu");
-				webPlayerHtmlProp = prop.getProperty("html.webplayer");
+				appPropertiesBundle.put("view.rootwindow", prop.getProperty("view.rootwindow"));
+				appPropertiesBundle.put("view.catalog", prop.getProperty("view.catalog"));
+				appPropertiesBundle.put("view.itembrowser", prop.getProperty("view.itembrowser"));
+				appPropertiesBundle.put("view.imageviewerwindow", prop.getProperty("view.imageviewerwindow"));
+				appPropertiesBundle.put("view.videolist", prop.getProperty("view.videolist"));
+				appPropertiesBundle.put("view.mediaplayer", prop.getProperty("view.mediaplayer"));
+				appPropertiesBundle.put("view.choosemediamenu", prop.getProperty("view.choosemediamenu"));
+				appPropertiesBundle.put("html.webplayer", prop.getProperty("html.webplayer"));
 				Locale locale = new Locale(prop.getProperty("locale.lang"), prop.getProperty("locale.country"));
 				appUnitsBundle = ResourceBundle.getBundle(fileLocale, locale);
 			}
@@ -58,32 +54,11 @@ public class PropertiesHandler {
 			}
 		}
 	}
+	public String getAppProperty(String name) {
+		return appPropertiesBundle.get(name);
+	}
 	public String getAppTitleProp() {
 		return appUnitsBundle.getString("apptitle");
-	}
-	public String getRootWindowViewProp() {
-		return rootWindowViewProp;
-	}
-	public String getCatalogViewProp() {
-		return catalogViewProp;
-	}
-	public String getItembrowserViewProp() {
-		return itembrowserViewProp;
-	}
-	public String getVideoListViewProp() {
-		return videoListViewProp;
-	}
-	public String getMediaPlayerViewProp() {
-		return mediaPlayerViewProp;
-	}
-	public String getImageViewerWindowProp() {
-		return imageViewerWindowProp;
-	}
-	public String getMediaMenuViewProp() {
-		return mediaMenuViewProp;
-	}
-	public String getWebPlayerHtmlProp() {
-		return webPlayerHtmlProp;
 	}
 	public String getUnitFilmsName() {
 		return appUnitsBundle.getString("unit.films");

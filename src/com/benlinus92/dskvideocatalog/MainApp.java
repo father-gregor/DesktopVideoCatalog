@@ -66,7 +66,7 @@ public class MainApp extends Application {
 	private void initRootWindowLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getRootWindowViewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.rootwindow")));
 			mainLayout = (AnchorPane)fxml.load();
 			root = fxml.getController();
 			root.setMainApp(this);
@@ -83,7 +83,7 @@ public class MainApp extends Application {
 	private void initCatalogLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getCatalogViewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.catalog")));
 			catalogLayout = (AnchorPane)fxml.load();
 			catalog = fxml.getController();
 			catalog.setMainApp(this);
@@ -95,7 +95,7 @@ public class MainApp extends Application {
 	private void initItemBrowserLayout() {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getItembrowserViewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.itembrowser")));
 			itemBrowserLayout = (AnchorPane)fxml.load();
 			itemBrowser = fxml.getController();
 			itemBrowser.setMainApp(this);
@@ -106,7 +106,7 @@ public class MainApp extends Application {
 	public void initImageViewerWindow(Image image) {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getImageViewerWindowProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.imageviewerwindow")));
 			AnchorPane imageWindow = (AnchorPane) fxml.load();
 			imageWindow.getChildren().add(new ImageView(image));
 			imageWindow.setOnScroll(se -> {
@@ -132,7 +132,7 @@ public class MainApp extends Application {
 		try {
 			//Desktop.getDesktop().open(new File("E:/Media/se-12-01_lostfilm.flv"));
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getVideoListViewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.videolist")));
 			AnchorPane videoListPane = (AnchorPane)fxml.load();
 			videoList = fxml.getController();
 			videoList.setMainApp(this);
@@ -146,7 +146,7 @@ public class MainApp extends Application {
 	public void initMediaPlayerLayout(VideoLink video, MediaStream streamType) {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
-			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getMediaPlayerViewProp()));
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.mediaplayer")));
 			BorderPane mediaPlayerPane = (BorderPane)fxml.load();
 			MediaPlayerController mediaPlayer = fxml.getController();
 			playerStage = new Stage();
