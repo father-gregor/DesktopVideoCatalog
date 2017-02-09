@@ -223,6 +223,8 @@ public class VideoListController {
 			return "video/mp4";
 		else if(type == MediaStream.HLS)
 			return "application/x-mpegURL";
+		else if(type == MediaStream.FLV)
+			return "video/x-flv";
 		return null;
 	}
 	public void setMainApp(MainApp mainApp) {

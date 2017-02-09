@@ -6,14 +6,12 @@
 	<link href="http://vjs.zencdn.net/5.16.0/video-js.css" rel="stylesheet">
 	<link href="css/player_style.css" rel="stylesheet">
 	<script src="http://vjs.zencdn.net/5.16.0/video.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-hls/5.2.0/videojs-contrib-hls.js"></script>
 </head>
 <body style="margin: 0px">
 	<div class="videocontent">
 	  <video id="web_video" class="video-js vjs-default-skin vjs-16-9 vjs-big-play-centered" controls
 	  poster="jaa.jpg">
-	    <source src="http://balancer.3tv.im/download/4/eWGWfkqUEOS29qihgJwdaQ,1486914958/films/8/24694/30114/480p_Hacksaw.Ridge..mp4" type="video/mp4" />
-	    <p class="vjs-no-js">
+	  <p class="vjs-no-js">
 	      To view this video please enable JavaScript, and consider upgrading to a web browser that
 	      <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
 	    </p>
@@ -27,11 +25,7 @@
 			controls: true,
 			autoplay: true,
 			fluid: true,
-			html5: {
-				hls: {
-					withCredentials: true
-				}
-			}
+			techOrder: ["html5", "flash"]
 		}, function() {
 			player = this;
 		})
@@ -45,11 +39,12 @@
 				java.log(quals[i] + " - " + links[i]);
 			}
 			player.src({
-				src: links[1],
+				src: links[0],
 				type: t
 			});
 		};
 		function disposePlayer() {
+			java.log(JSON.stringify(player));
 			player.pause();
 			java.log(player.aspectRatio());
 			videojs(document.getElementById('web_video')).dispose();
