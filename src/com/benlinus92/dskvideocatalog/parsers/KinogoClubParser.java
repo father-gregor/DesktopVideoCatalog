@@ -19,6 +19,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -56,7 +57,11 @@ public class KinogoClubParser implements Parser {
 	}
 	@Override
 	public String getHtmlContent(String url) throws IOException {
-		HttpClient client = HttpClientBuilder.create().build();
+		int timeout = 6;
+		RequestConfig config = RequestConfig.custom()
+				.setConnectTimeout(1000 * timeout)
+				.setConnectionRequestTimeout(1000 * timeout).build();
+		HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", AppConstants.USER_AGENT); 
 		HttpResponse response = client.execute(request);
