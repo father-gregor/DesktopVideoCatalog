@@ -6,12 +6,13 @@
 	<link href="http://vjs.zencdn.net/5.16.0/video-js.css" rel="stylesheet">
 	<link href="css/player_style.css" rel="stylesheet">
 	<script src="http://vjs.zencdn.net/5.16.0/video.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-hls/5.2.0/videojs-contrib-hls.js"></script>
 </head>
 <body style="margin: 0px">
 	<div class="videocontent">
-	  <video id="web_video" class="video-js vjs-default-skin vjs-fluid vjs-big-play-centered" controls preload="auto"
+	  <video id="web_video" class="video-js vjs-default-skin vjs-16-9 vjs-big-play-centered" controls
 	  poster="jaa.jpg">
-	    <source src="http://balancer.3tv.im/download/4/68S9Igp6BiRTpd4XGHgkRw,1486857310/films/8/24568/30106/480p_Nocturnal.Animals.2016..mp4" type='video/mp4' />
+	    <source src="http://balancer.3tv.im/download/4/eWGWfkqUEOS29qihgJwdaQ,1486914958/films/8/24694/30114/480p_Hacksaw.Ridge..mp4" type="video/mp4" />
 	    <p class="vjs-no-js">
 	      To view this video please enable JavaScript, and consider upgrading to a web browser that
 	      <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
@@ -23,15 +24,20 @@
 		var sources = {};
 		videojs.options.flash.swf = "https://cdnjs.cloudflare.com/ajax/libs/videojs-swf/5.2.0/video-js.swf";
 		player = videojs("web_video", {
-			"controls": true,
-			"autoplay": true,
-			"fluid": true
+			controls: true,
+			autoplay: true,
+			fluid: true,
+			html5: {
+				hls: {
+					withCredentials: true
+				}
+			}
 		}, function() {
 			player = this;
-			console.log(player.aspectRatio());
 		})
 		function setSource(quals, links, t) {
 			java.log(t);
+			java.log("SETSOURCE Player.html");
 			sources.links = links;
 			sources.quals = quals;
 			sources.t = t;

@@ -10,6 +10,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.benlinus92.dskvideocatalog.JavaToJavascriptBridge;
 import com.benlinus92.dskvideocatalog.MainApp;
@@ -50,6 +52,7 @@ public class VideoListController {
 	private MediaStream streamType;
 	private WebView webPlayer;
 	private volatile Map<String, String> availableStreams;
+	private AtomicBoolean isHtmlLoaded = new AtomicBoolean(false);
 	private Stage mediaMenuStage;
 	@FXML
 	private ScrollPane listScrollPane;
@@ -104,33 +107,26 @@ public class VideoListController {
 		mainApp.initMediaPlayerLayout(selectedVideo, streamType);
 	}
 	public void openWebPlayer() {
+		System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 		mediaMenuStage.fireEvent(new WindowEvent(mediaMenuStage, WindowEvent.WINDOW_CLOSE_REQUEST));
 		try {
 			Stage webStage = new Stage();
 			webPlayer = new WebView();
-			webPlayer.setMinWidth(700.0);
+			AtomicInteger webstatusCount = new AtomicInteger(0);
+			//webPlayer.setMinWidth(700.0);
 			//webPlayer.setMinHeight(400.0);
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					availableStreams = mainApp.getCurrentParser().getVideoStreamMap(selectedVideo, streamType);
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							webPlayer.getEngine().getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
-								if(newState.equals(State.SUCCEEDED)) {
-					            	System.out.println(newState.toString());
-									JSObject window = (JSObject) webPlayer.getEngine().executeScript("window");
-									window.setMember("java", new JavaToJavascriptBridge());
-					            	window.call("setSource", (Object)availableStreams.keySet().toArray(new String[availableStreams.size()]),
-					            			availableStreams.values().toArray(), getStreamTypeForWeb(streamType));
-								}
-					        });
-						}
-					});
-					
+			webPlayer.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+				if(!isHtmlLoaded.get() && newState.equals(State.SUCCEEDED)) {
+					isHtmlLoaded.set(true);
+					startInitWebSourceThread();
 				}
-			}).start();
+			});
+			webPlayer.getEngine().setOnStatusChanged(e -> {
+				if(isHtmlLoaded.get() && webstatusCount.get() > 0) {
+					startInitWebSourceThread();
+				}
+				webstatusCount.incrementAndGet();
+			});
 			String content = streamToString(getClass().getClassLoader()
 					.getResourceAsStream(PropertiesHandler.getInstance().getAppProperty("html.webplayer")));
 			webPlayer.getEngine().loadContent(content);
@@ -151,6 +147,25 @@ public class VideoListController {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+	}
+	private void startInitWebSourceThread() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				availableStreams = mainApp.getCurrentParser().getVideoStreamMap(selectedVideo, streamType);
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						System.out.println("TTTTT");
+						JSObject window = (JSObject) webPlayer.getEngine().executeScript("window");
+						window.setMember("java", new JavaToJavascriptBridge());
+		            	window.call("setSource", (Object)availableStreams.keySet().toArray(new String[availableStreams.size()]),
+		            			availableStreams.values().toArray(), getStreamTypeForWeb(streamType));
+					}
+				});
+				
+			}
+		}).start();
 	}
 	public void openUserDefaultPlayer() {
 		Runnable task = new Runnable() {
