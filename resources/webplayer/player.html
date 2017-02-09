@@ -3,20 +3,53 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Web Player</title>
-	<link rel="stylesheet" href="./js/test.css">
-	<link rel="stylesheet" href="https://releases.flowplayer.org/7.0.1/skin/minimalist.css">
- 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  	<script src="https://releases.flowplayer.org/7.0.1/flowplayer.min.js"></script>
+	<link href="http://vjs.zencdn.net/5.16.0/video-js.css" rel="stylesheet">
+	<link href="css/player_style.css" rel="stylesheet">
+	<script src="http://vjs.zencdn.net/5.16.0/video.js"></script>
 </head>
-<body>
-Hello World
-	<div class="flowplayer">
-	    <video>
-	      <source type="video/webm"
-	              src="https://edge.flowplayer.org/drive.webm">
-	      <source type="video/mp4"
-	              src="https://edge.flowplayer.org/drive.mp4">
-	    </video>
+<body style="margin: 0px">
+	<div class="videocontent">
+	  <video id="web_video" class="video-js vjs-default-skin vjs-fluid vjs-big-play-centered" controls preload="auto"
+	  poster="jaa.jpg">
+	    <source src="http://balancer.3tv.im/download/4/68S9Igp6BiRTpd4XGHgkRw,1486857310/films/8/24568/30106/480p_Nocturnal.Animals.2016..mp4" type='video/mp4' />
+	    <p class="vjs-no-js">
+	      To view this video please enable JavaScript, and consider upgrading to a web browser that
+	      <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+	    </p>
+	  </video>
 	</div>
+	<script>
+		var player = {};
+		var sources = {};
+		videojs.options.flash.swf = "https://cdnjs.cloudflare.com/ajax/libs/videojs-swf/5.2.0/video-js.swf";
+		player = videojs("web_video", {
+			"controls": true,
+			"autoplay": true,
+			"fluid": true
+		}, function() {
+			player = this;
+			console.log(player.aspectRatio());
+		})
+		function setSource(quals, links, t) {
+			java.log(t);
+			sources.links = links;
+			sources.quals = quals;
+			sources.t = t;
+			for(var i in links) {
+				java.log(quals[i] + " - " + links[i]);
+			}
+			player.src({
+				src: links[1],
+				type: t
+			});
+		};
+		function disposePlayer() {
+			player.pause();
+			java.log(player.aspectRatio());
+			videojs(document.getElementById('web_video')).dispose();
+			java.log("Disposed");
+		}
+	</script>
+	<script type="text/javascript" src="player_controller.js"></script>
 </body>
 </html>
