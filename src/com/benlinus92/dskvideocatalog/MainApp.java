@@ -16,6 +16,7 @@ import com.benlinus92.dskvideocatalog.viewcontroller.ChooseMediaMenuController;
 import com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController;
 import com.benlinus92.dskvideocatalog.viewcontroller.MediaPlayerController;
 import com.benlinus92.dskvideocatalog.viewcontroller.RootWindowController;
+import com.benlinus92.dskvideocatalog.viewcontroller.SettingsController;
 import com.benlinus92.dskvideocatalog.viewcontroller.VideoListController;
 
 import javafx.application.Application;
@@ -35,11 +36,13 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import sun.applet.Main;
 
 public class MainApp extends Application {
 
 	private Stage primaryStage;
 	private Stage playerStage;
+	private Stage settingsStage;
 	private Pane mainLayout;
 	private Pane catalogLayout;
 	private Pane itemBrowserLayout;
@@ -161,9 +164,29 @@ public class MainApp extends Application {
 			playerStage.setOnCloseRequest(e -> {
 				mediaPlayer.disposeMediaPlayer();
 				mediaPlayerPane.getChildren().clear();
-				((Stage)e.getSource()).setScene(null);
+				playerStage.setScene(null);
 			});
 			playerStage.show();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void initSettingsWindow() {
+		try {
+			FXMLLoader fxml = new FXMLLoader();
+			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.settings")));
+			BorderPane settingsPane = (BorderPane) fxml.load();
+			SettingsController settings = fxml.getController();
+			settings.setMainApp(this);
+			settingsStage = new Stage();
+			settingsStage.initModality(Modality.APPLICATION_MODAL);
+			settingsStage.setTitle("Settings");
+			settingsStage.setScene(new Scene(settingsPane));
+			settingsStage.setOnCloseRequest(e -> {
+				settingsPane.getChildren().clear();
+				settingsStage.setScene(null);
+			});
+			settingsStage.show();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -190,6 +213,9 @@ public class MainApp extends Application {
 	}
 	public Stage getPlayerStage() {
 		return this.playerStage;
+	}
+	public Stage getSettingsStage() {
+		return this.settingsStage;
 	}
 	public Pane getCatalogPane() {
 		return this.catalogLayout;

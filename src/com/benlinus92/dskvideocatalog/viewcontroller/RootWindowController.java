@@ -17,6 +17,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -31,10 +34,22 @@ public class RootWindowController {
 	@FXML
 	private Button backButton;
 	@FXML
+	private Button settingsButton;
+	@FXML
 	private void initialize() {
 		List<Parser> parsersList = Arrays.asList(new TreeTvParser(), new KinogoClubParser(), new ExFsParser());//add all parsers there
-		backButton.setOnAction(e -> {
-			if(mainApp.getCurrentState().getPaneState() != null) {
+		Image buttonImage = new Image(this.getClass().getClassLoader().getResourceAsStream("img/misc/gear.png"));
+		settingsButton.setGraphic(new ImageView(buttonImage));
+		settingsButton.setStyle("-fx-background-color: transparent");
+		settingsButton.setOnMouseClicked(e -> {
+			if(e.getButton() == MouseButton.PRIMARY)
+				mainApp.initSettingsWindow();
+		});
+		buttonImage = new Image(this.getClass().getClassLoader().getResourceAsStream("img/misc/back.png"));
+		backButton.setGraphic(new ImageView(buttonImage));
+		backButton.setStyle("-fx-background-color: transparent");
+		backButton.setOnMouseClicked(e -> {
+			if(e.getButton() == MouseButton.PRIMARY && mainApp.getCurrentState().getPaneState() != null) {
 				setRightSidePane(mainApp.getCurrentState().getPaneState());
 				if(mainApp.getCurrentState().getPaneState() == mainApp.getCatalogPane())
 					mainApp.getCurrentState().setPaneState(null);;
