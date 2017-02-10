@@ -21,7 +21,7 @@ public class ChooseMediaMenuController {
 	public void initialize() {
 		internalPlayerLabel.setText(PropertiesHandler.getInstance().getInternalPlayerLabel());
 		webPlayerLabel.setText(PropertiesHandler.getInstance().getWebPlayerLabel());
-		userDefaultPlayerLabel.setText(PropertiesHandler.getInstance().getDefaultPlayerLabel());
+		userDefaultPlayerLabel.setText(PropertiesHandler.getInstance().getDownloadLinkLabel());
 		copyLinkLabel.setText(PropertiesHandler.getInstance().getCopyLinkLabel());
 	}
 	public void initializeMenuItems() {

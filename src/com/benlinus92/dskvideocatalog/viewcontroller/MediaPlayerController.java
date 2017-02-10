@@ -94,7 +94,8 @@ public class MediaPlayerController {
 					@Override
 					public void run() {
 						Media media = new Media(availableStreams.get("480"));
-						//Media media = new Media("file:///E:/Media/index.m3u8");
+						//Media media = new Media("http://cdn.kinoprofi.org/files/x8xM9QGHIpTn4R3sK6o2ww,1486762627/Sosud.2016.HDRip.flv");
+						//Media media = new Media("file:///E:/Media/20051210-w50s.mp4");
 						//System.out.println(media.getError().getMessage());
 						player = new MediaPlayer(media);
 						player.setAutoPlay(true);

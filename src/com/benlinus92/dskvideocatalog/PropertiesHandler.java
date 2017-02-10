@@ -78,6 +78,9 @@ public class PropertiesHandler {
 	public String getDefaultPlayerLabel() {
 		return appUnitsBundle.getString("label.defaultplayer");
 	}
+	public String getDownloadLinkLabel() {
+		return appUnitsBundle.getString("label.downloadlink");
+	}
 	public String getCopyLinkLabel() {
 		return appUnitsBundle.getString("label.copylink");
 	}
