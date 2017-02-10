@@ -179,7 +179,7 @@ public class MediaPlayerController {
 	
 	private Button createToolbarButton(Image buttonImage) {
 		Button newButton = new Button();
-		newButton.setStyle("-fx-background-color:" + TOOLBAR_COLOR);
+		newButton.setStyle("-fx-background-color: transparent");
 		newButton.setGraphic(new ImageView(buttonImage));
 		newButton.addEventHandler(MouseEvent.MOUSE_ENTERED, enteredButton);
 		newButton.addEventHandler(MouseEvent.MOUSE_EXITED, exitedButton);

@@ -16,12 +16,15 @@ public class ChooseMediaMenuController {
 	@FXML
 	private Label userDefaultPlayerLabel;
 	@FXML
+	private Label downloadLinkLabel;
+	@FXML
 	private Label copyLinkLabel;
 	@FXML
 	public void initialize() {
 		internalPlayerLabel.setText(PropertiesHandler.getInstance().getInternalPlayerLabel());
 		webPlayerLabel.setText(PropertiesHandler.getInstance().getWebPlayerLabel());
-		userDefaultPlayerLabel.setText(PropertiesHandler.getInstance().getDownloadLinkLabel());
+		userDefaultPlayerLabel.setText(PropertiesHandler.getInstance().getDefaultPlayerLabel());
+		downloadLinkLabel.setText(PropertiesHandler.getInstance().getDownloadLinkLabel());
 		copyLinkLabel.setText(PropertiesHandler.getInstance().getCopyLinkLabel());
 	}
 	public void initializeMenuItems() {
@@ -41,6 +44,12 @@ public class ChooseMediaMenuController {
 			if(me.getButton().toString() == MouseButton.PRIMARY.toString()) {
 				System.out.println("DEFAULT PLAYER");
 				mainCaller.openUserDefaultPlayer();
+			}
+		});
+		downloadLinkLabel.setOnMouseClicked(me -> {
+			if(me.getButton().toString() == MouseButton.PRIMARY.toString()) {
+				System.out.println("DOWNLOAD LINK");
+				mainCaller.downloadFile();
 			}
 		});
 		copyLinkLabel.setOnMouseClicked(me -> {
