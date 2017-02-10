@@ -85,7 +85,7 @@ public class VideoListController {
 			ChooseMediaMenuController menuCont = fxml.getController();
 			menuCont.setMainCaller(this);
 			menuCont.initializeMenuItems();
-			mediaMenuPane.setStyle("-fx-background-color:#c2c6ce");
+			mediaMenuPane.setStyle("-fx-background-color:#cbd8ed");
 			mediaMenuStage = new Stage(StageStyle.TRANSPARENT);
 			mediaMenuStage.setOnCloseRequest(e -> {
 				mediaMenuPane.getChildren().clear();
@@ -167,7 +167,7 @@ public class VideoListController {
 			}
 		}).start();
 	}
-	public void openUserDefaultPlayer() {
+	public void downloadFile() {
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
@@ -188,6 +188,10 @@ public class VideoListController {
 		};
 		Thread backgroundThread = new Thread(task);
 		backgroundThread.start();
+	}
+	public void openUserDefaultPlayer() {
+		String pathToPlayer = PropertiesHandler.getInstance().getUserProperty("userplayer.path");
+		String playerName = PropertiesHandler.getInstance().getUserProperty("userplayer.name");
 	}
 	public void copyLinkToClipboard() {
 		Runnable task = new Runnable() {

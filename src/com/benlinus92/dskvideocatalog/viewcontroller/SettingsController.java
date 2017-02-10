@@ -22,7 +22,10 @@ public class SettingsController {
 	private TextField pathToSystemPlayer;
 	@FXML
 	private void initialize() {
-		//pathToSystemPlayer.setText(value);
+		String path = PropertiesHandler.getInstance().getUserProperty("userplayer.path");
+		if(path == null)
+			path = "";
+		pathToSystemPlayer.setText(path);
 		Image buttonImage = new Image(this.getClass().getClassLoader().getResourceAsStream("img/misc/folder.png"));
 		fileChooseButton.setGraphic(new ImageView(buttonImage));
 		fileChooseButton.setStyle("-fx-background-color: transparent");
@@ -34,8 +37,8 @@ public class SettingsController {
 				File userPlayer = fileChooser.showOpenDialog(mainApp.getSettingsStage());
 				if(userPlayer != null) {
 					System.out.println(userPlayer.getName());
-					PropertiesHandler.getInstance().setAppProperty("userplayer.path", userPlayer.getAbsolutePath());
-					PropertiesHandler.getInstance().setAppProperty("userplayer.name", userPlayer.getName());
+					PropertiesHandler.getInstance().setUserProperty("userplayer.path", userPlayer.getAbsolutePath());
+					PropertiesHandler.getInstance().setUserProperty("userplayer.name", userPlayer.getName());
 					pathToSystemPlayer.setText(userPlayer.getAbsolutePath());
 				}
 			}
