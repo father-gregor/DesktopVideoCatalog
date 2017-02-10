@@ -20,12 +20,10 @@
 	<script>
 		var player = {};
 		var sources = {};
-		videojs.options.flash.swf = "https://cdnjs.cloudflare.com/ajax/libs/videojs-swf/5.2.0/video-js.swf";
 		player = videojs("web_video", {
 			controls: true,
 			autoplay: true,
-			fluid: true,
-			techOrder: ["html5", "flash"]
+			fluid: true
 		}, function() {
 			player = this;
 		})
@@ -39,12 +37,11 @@
 				java.log(quals[i] + " - " + links[i]);
 			}
 			player.src({
-				src: links[0],
+				src: links[1],
 				type: t
 			});
 		};
 		function disposePlayer() {
-			java.log(JSON.stringify(player));
 			player.pause();
 			java.log(player.aspectRatio());
 			videojs(document.getElementById('web_video')).dispose();
