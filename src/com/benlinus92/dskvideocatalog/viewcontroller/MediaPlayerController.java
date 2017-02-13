@@ -37,6 +37,7 @@ import javafx.util.Duration;
 public class MediaPlayerController {
 
 	private final static String TOOLBAR_COLOR = "#ced5e0";
+	private final static double DEFAULT_VOLUME = 0.75;
 	private MainApp mainApp;
 	private MediaPlayer player = null;
 	private Slider timeSlider;
@@ -45,7 +46,8 @@ public class MediaPlayerController {
 	private EventHandler<MouseEvent> enteredButton;
 	private EventHandler<MouseEvent> exitedButton;
 	private ChangeListener<Duration> timeListener;
-	private ChangeListener<Double> volumeListener;
+	private ChangeListener<? super Number> volumeListener;
+	private double lastVolumeValue = DEFAULT_VOLUME;
 	private volatile Map<String, String> availableStreams = new LinkedHashMap<>(); 
 	private String videoName;
 	private String streamName;
@@ -61,7 +63,7 @@ public class MediaPlayerController {
 			((Button)me.getSource()).setStyle("-fx-background-color:#a4adbc");
 		};
 		exitedButton = (me) -> {
-			((Button)me.getSource()).setStyle("-fx-background-color:" + TOOLBAR_COLOR);
+			((Button)me.getSource()).setStyle("-fx-background-color: transparent");
 		};
 		toolbarBox.setStyle("-fx-background-color:" + TOOLBAR_COLOR);
 		timeSlider = createTimeSlider();
@@ -69,6 +71,9 @@ public class MediaPlayerController {
 			timeTextLabel.setText(formatTime(player.getCurrentTime(), player.getTotalDuration()));
 			if(!timeSlider.isValueChanging())
 				timeSlider.setValue(newV.toSeconds());
+		};
+		volumeListener = (observable, oldV, newV) -> {
+			volumeSlider.setValue(newV.doubleValue());
 		};
 		toolbarBox.getChildren().add(timeSlider);
 		createToolbar();
@@ -102,8 +107,9 @@ public class MediaPlayerController {
 						//System.out.println(media.getError().getMessage());
 						player = new MediaPlayer(media);
 						player.setAutoPlay(true);
-						player.setVolume(0.75);
+						player.setVolume(DEFAULT_VOLUME);
 						player.currentTimeProperty().addListener(timeListener);
+						player.volumeProperty().addListener(volumeListener);
 						player.setOnReady(() -> {
 							timeSlider.setValue(0);
 							timeSlider.setMax(player.getTotalDuration().toSeconds());
@@ -178,7 +184,14 @@ public class MediaPlayerController {
 		buttonImage = new Image(this.getClass().getClassLoader().getResourceAsStream("img/toolbar/player_volume.png"), 35.0, 35.0, true, true);
 		newButton = createToolbarButton(buttonImage);
 		newButton.setOnAction(ae -> {
-			player.setMute(!player.isMute());
+			
+			if(player.getVolume() > 0.0) {
+				lastVolumeValue = player.getVolume();
+				player.setVolume(0.0);
+			}
+			else if(player.getVolume() == 0.0) {
+				player.setVolume(lastVolumeValue);
+			}
 		});
 		volumeSlider = createVolumeSlider();
 		volumeSlider.setMinWidth(50);
@@ -212,7 +225,7 @@ public class MediaPlayerController {
 		return slider;
 	}
 	private Slider createVolumeSlider() {
-		Slider slider = new Slider(0.0, 1.0, player.getVolume());
+		Slider slider = new Slider(0.0, 1.0, DEFAULT_VOLUME);
 		slider.valueProperty().addListener((observable, oldV, newV) -> {
 			System.out.println(newV.doubleValue());
 			player.setVolume(newV.doubleValue());
@@ -233,7 +246,6 @@ public class MediaPlayerController {
 				durationInt -= durationHours * 60 * 60;
 			int durationMinutes = durationInt / 60;
 			int durationSeconds = durationInt - durationMinutes * 60;
-			System.out.println(durationInt + " " + durationHours + " " + durationMinutes + " = " + durationSeconds);
 			if(durationHours > 0) {
 		         return String.format("%d:%02d:%02d/%d:%02d:%02d", 
 		        		 elapsedHours, elapsedMinutes, elapsedSeconds,
