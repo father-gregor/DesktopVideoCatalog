@@ -132,19 +132,15 @@ public class PropertiesHandler {
 		return appUnitsBundle.getString("unit.cartoons");
 	}
 	public String getInternalPlayerLabel() {
-		System.out.println(appUnitsBundle.getString("label.internalplayer"));
 		return appUnitsBundle.getString("label.internalplayer");
 	}
 	public String getWebPlayerLabel() {
-		System.out.println(appUnitsBundle.getString("label.webplayer"));
 		return appUnitsBundle.getString("label.webplayer");
 	}
 	public String getDefaultPlayerLabel() {
-		System.out.println(appUnitsBundle.getString("label.defaultplayer"));
 		return appUnitsBundle.getString("label.defaultplayer");
 	}
 	public String getDownloadLinkLabel() {
-		System.out.println();
 		return appUnitsBundle.getString("label.downloadlink");
 	}
 	public String getCopyLinkLabel() {

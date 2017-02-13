@@ -191,7 +191,26 @@ public class VideoListController {
 	}
 	public void openUserDefaultPlayer() {
 		String pathToPlayer = PropertiesHandler.getInstance().getUserProperty("userplayer.path");
-		String playerName = PropertiesHandler.getInstance().getUserProperty("userplayer.name");
+		if(pathToPlayer != null) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						availableStreams = mainApp.getCurrentParser().getVideoStreamMap(selectedVideo, streamType);
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								mediaMenuStage.fireEvent(new WindowEvent(mediaMenuStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+							}
+						});
+						ProcessBuilder pb = new ProcessBuilder(pathToPlayer, availableStreams.get("480"));
+						pb.start();
+					} catch(IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
 	}
 	public void copyLinkToClipboard() {
 		Runnable task = new Runnable() {
