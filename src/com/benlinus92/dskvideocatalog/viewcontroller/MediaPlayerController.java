@@ -16,6 +16,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -40,9 +41,11 @@ public class MediaPlayerController {
 	private MediaPlayer player = null;
 	private Slider timeSlider;
 	private Label timeTextLabel;
+	private Slider volumeSlider;
 	private EventHandler<MouseEvent> enteredButton;
 	private EventHandler<MouseEvent> exitedButton;
 	private ChangeListener<Duration> timeListener;
+	private ChangeListener<Double> volumeListener;
 	private volatile Map<String, String> availableStreams = new LinkedHashMap<>(); 
 	private String videoName;
 	private String streamName;
@@ -99,7 +102,7 @@ public class MediaPlayerController {
 						//System.out.println(media.getError().getMessage());
 						player = new MediaPlayer(media);
 						player.setAutoPlay(true);
-						//player.setMute(true);
+						player.setVolume(0.75);
 						player.currentTimeProperty().addListener(timeListener);
 						player.setOnReady(() -> {
 							timeSlider.setValue(0);
@@ -110,8 +113,6 @@ public class MediaPlayerController {
 						playerView.setFitHeight(media.getHeight());
 						playerView.setFitWidth(media.getWidth());
 						mainApp.getPlayerStage().setTitle(videoName + " " + streamName);
-						//((BorderPane)playerView.getParent()).setPrefWidth(1000);
-						//((BorderPane)playerView.getParent()).setPrefHeight(media.getHeight());
 					}
 				});
 			}
@@ -121,7 +122,6 @@ public class MediaPlayerController {
 			backgroundThread.setDaemon(true);
 			backgroundThread.start();
 		}
-		//if(streamType == MediaStream.HLS) { }
 	}
 	public void createToolbar() {
 		HBox buttonsBox = new HBox();
@@ -174,6 +174,16 @@ public class MediaPlayerController {
 		
 		timeTextLabel = new Label();
 		buttonsBox.getChildren().add(timeTextLabel);
+		
+		buttonImage = new Image(this.getClass().getClassLoader().getResourceAsStream("img/toolbar/player_volume.png"), 35.0, 35.0, true, true);
+		newButton = createToolbarButton(buttonImage);
+		newButton.setOnAction(ae -> {
+			player.setMute(!player.isMute());
+		});
+		volumeSlider = createVolumeSlider();
+		volumeSlider.setMinWidth(50);
+		buttonsBox.getChildren().addAll(newButton, volumeSlider);
+		
 		toolbarBox.getChildren().add(buttonsBox);
 	}
 	
@@ -192,7 +202,6 @@ public class MediaPlayerController {
                 double currentTime = player.getCurrentTime().toSeconds();
                 if (Math.abs(currentTime - newV.doubleValue()) > 10) {
                     player.seek(Duration.seconds(newV.doubleValue()));
-                    //timeTextLabel.setText(formatTime(player.getCurrentTime(), player.getTotalDuration()));
                 }
             }
 		});
@@ -202,21 +211,29 @@ public class MediaPlayerController {
 		});
 		return slider;
 	}
+	private Slider createVolumeSlider() {
+		Slider slider = new Slider(0.0, 1.0, player.getVolume());
+		slider.valueProperty().addListener((observable, oldV, newV) -> {
+			System.out.println(newV.doubleValue());
+			player.setVolume(newV.doubleValue());
+		});
+		return slider;
+	}
 	private static String formatTime(Duration elapsed, Duration duration) {
 		int elapsedInt = (int)Math.floor(elapsed.toSeconds());
 		int elapsedHours = elapsedInt / (60 * 60);
 		if(elapsedHours > 0)
 			elapsedInt -= elapsedHours * 60 * 60;
 		int elapsedMinutes = elapsedInt / 60;
-		int elapsedSeconds = elapsedInt - elapsedHours * 60 * 60 - elapsedMinutes * 60;
+		int elapsedSeconds = elapsedInt - elapsedMinutes * 60;
 		if(duration.greaterThan(Duration.ZERO)) {
 			int durationInt = (int) Math.floor(duration.toSeconds());
 			int durationHours = durationInt / (60 * 60);
 			if(durationHours > 0)
 				durationInt -= durationHours * 60 * 60;
 			int durationMinutes = durationInt / 60;
-			int durationSeconds = durationInt - durationHours * 60 * 60 
-					- durationMinutes * 60;
+			int durationSeconds = durationInt - durationMinutes * 60;
+			System.out.println(durationInt + " " + durationHours + " " + durationMinutes + " = " + durationSeconds);
 			if(durationHours > 0) {
 		         return String.format("%d:%02d:%02d/%d:%02d:%02d", 
 		        		 elapsedHours, elapsedMinutes, elapsedSeconds,
