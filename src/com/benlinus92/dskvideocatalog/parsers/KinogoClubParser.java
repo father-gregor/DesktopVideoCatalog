@@ -115,11 +115,6 @@ public class KinogoClubParser implements Parser {
 		}
 		for(Element e: el.select("div.shortimg b")) {
 			text = e.nextSibling().toString().trim();
-			//System.out.println("SIBLING:" + e.text());
-			if(e.text().contains("Страна")) {
-				//System.out.println("SIBLING:" + e.nextElementSibling().outerHtml());
-			}
-			//System.out.println("SIBLING: " + e.nextElementSibling().text());
 		}
 		//System.out.println("SIBLING: " + el.select("div.shortimg b").first().nextSibling().toString());
 		//item.setAddedDate(LocalDate.parse("2017-02-02"));

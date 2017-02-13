@@ -3,19 +3,24 @@ package com.benlinus92.dskvideocatalog.parsers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -27,6 +32,7 @@ import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
+import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 
 public class ExFsParser implements Parser {
 	private final static String EXFS_FILMS_URL = "http://ex-fs.net/films/page/";
@@ -36,10 +42,11 @@ public class ExFsParser implements Parser {
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.MM.yyyy");
 	private Map<String, Integer> parserCategoryMap;
 	private List<MediaStream> mediaStreamsList;
+	private String cookieStr = "";
 	
 	public ExFsParser() {
 		mediaStreamsList = new ArrayList<>();
-		mediaStreamsList.add(MediaStream.M3U8);
+		mediaStreamsList.add(MediaStream.HLS);
 		parserCategoryMap = new LinkedHashMap<>();
 		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitFilmsName(), AppConstants.CATEGORY_FILMS);
 		parserCategoryMap.put(PropertiesHandler.getInstance().getUnitSeriesName(), AppConstants.CATEGORY_SERIES);
@@ -57,6 +64,14 @@ public class ExFsParser implements Parser {
 		request.addHeader("User-Agent", AppConstants.USER_AGENT); 
 		HttpResponse response = client.execute(request);
 		System.out.println(EXFS_BASIC_URL + " -  status " + response.getStatusLine().getStatusCode());
+		for(Header header: Arrays.asList(response.getHeaders("Set-Cookie"))) {
+			if(header.getValue().contains("__cfduid=")) {
+				cookieStr = cookieStr + header.getValue().split(";")[0] + "; ";
+			} else if(header.getValue().contains("PHPSESSID=")) {
+				cookieStr = cookieStr + header.getValue().split(";")[0] + "; ";
+			}
+		}
+		System.out.println(cookieStr);
 		BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 		String line = null;
 		StringBuilder sb = new StringBuilder();
@@ -143,11 +158,40 @@ public class ExFsParser implements Parser {
 				item.setDirector(elem.select("a").text());
 				break;
 			}
+		item.setVideoTransTypeList(getVideoTranslationList(el.select("div#rightholder iframe").attr("src")));
 		return item;
 	}
 	
+	private List<VideoTranslationType> getVideoTranslationList(String iframeLink) {
+		List<VideoTranslationType> videoList = new ArrayList<>();
+		System.out.println(iframeLink);
+		try {
+			Header userAgent = new BasicHeader("User-Agent", AppConstants.MOBILE_USER_AGENT);
+			Header cookie = new BasicHeader("Cookie", cookieStr);
+			int timeout = 6;
+			RequestConfig config = RequestConfig.custom()
+					.setConnectTimeout(1000 * timeout)
+					.setConnectionRequestTimeout(1000 * timeout).build();
+			HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+			HttpGet request = new HttpGet(iframeLink);
+			request.addHeader(userAgent);
+			request.addHeader(cookie);
+			HttpResponse response = client.execute(request);
+			String webcontent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
+			System.out.println(webcontent);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return videoList;
+	}
+	private Map<String, String> getHlsStreamMap(String link) {
+		Map<String, String> videoMap = new LinkedHashMap<>();
+		return videoMap;
+	}
 	@Override
 	public Map<String, String> getVideoStreamMap(VideoLink video, MediaStream type) {
+		Map<String, String> availableVideoMap = new LinkedHashMap<>();
+		getHlsStreamMap(video.getLink());
 		return null;
 	}
 
