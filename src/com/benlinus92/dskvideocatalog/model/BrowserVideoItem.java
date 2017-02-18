@@ -25,7 +25,7 @@ public class BrowserVideoItem extends SimpleVideoItem {
 		return genre;
 	}
 	public void setGenre(List<String> genre) {
-		this.genre.set(genre);
+		this.genre.set(new ArrayList<String>(genre));
 	}
 	public String getCountry() {
 		return country.get();
@@ -70,7 +70,7 @@ public class BrowserVideoItem extends SimpleVideoItem {
 		return cast;
 	}
 	public void setCast(List<String> cast) {
-		this.cast.set(cast);
+		this.cast.set(new ArrayList<String>(cast));
 	}
 	public String getPlot() {
 		return plot.get();
@@ -88,6 +88,6 @@ public class BrowserVideoItem extends SimpleVideoItem {
 		return videosTransTypeList;
 	}
 	public void setVideoTransTypeList(List<VideoTranslationType> videoList) {
-		this.videosTransTypeList.set(videoList);
+		this.videosTransTypeList.set(new ArrayList<VideoTranslationType>(videoList));
 	}
 }

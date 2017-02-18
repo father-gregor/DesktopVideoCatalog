@@ -176,7 +176,6 @@ public class ExFsParser implements Parser {
 	
 	private List<VideoTranslationType> getVideoTranslationList(String originalUrl, String iframeLink) {
 		List<VideoTranslationType> videoList = new ArrayList<>();
-		System.out.println(iframeLink);
 		try {
 			Header userAgent = new BasicHeader("User-Agent", AppConstants.MOBILE_USER_AGENT);
 			Header cookie = new BasicHeader("Cookie", cookieStr);

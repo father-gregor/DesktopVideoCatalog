@@ -58,7 +58,7 @@ public class SimpleVideoItem {
 		return addedDate;
 	}
 	public void setAddedDate(LocalDate addedDate) {
-		this.addedDate.set(addedDate);
+		this.addedDate.set(LocalDate.ofEpochDay(addedDate.toEpochDay()));
 	}
 	@Override
 	public String toString() {
