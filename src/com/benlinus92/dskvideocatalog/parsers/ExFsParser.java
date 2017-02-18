@@ -49,6 +49,8 @@ public class ExFsParser implements Parser {
 	private final static String EXFS_SERIES_URL = "http://ex-fs.net/series/page/";
 	private final static String EXFS_CARTOONS_URL = "http://ex-fs.net/cartoon/page/";
 	private final static String EXFS_BASIC_URL = "http://ex-fs.net";
+	private final static String EXFS_PLAYLIST_URL = 
+			"http://cdn.ex-fs.net/video/VIDEOTOKEN/index.m3u8?cd=0&mw_pid=PIDTOKEN&man_type=reorder2&man_arg=2";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.MM.yyyy");
 	private Map<String, Integer> parserCategoryMap;
 	private List<MediaStream> mediaStreamsList;
@@ -160,7 +162,8 @@ public class ExFsParser implements Parser {
 			list.add(elem.attr("title"));
 		item.setGenre(list);
 		item.setTranslation(infoElem.get(3).text());
-		item.setDuration(infoElem.get(5).text());
+		if(infoElem.size() > 5)
+			item.setDuration(infoElem.get(5).text());
 		item.setPlot(el.select("div.FullstorySubFormText").text());
 		list = new ArrayList<>();
 		for(Element elem: el.select("div.FullstoryKadrFormImgAc img"))
@@ -175,7 +178,7 @@ public class ExFsParser implements Parser {
 	}
 	
 	private List<VideoTranslationType> getVideoTranslationList(String originalUrl, String iframeLink) {
-		List<VideoTranslationType> videoList = new ArrayList<>();
+		List<VideoTranslationType> availablePlaylist = new ArrayList<>();
 		try {
 			Header userAgent = new BasicHeader("User-Agent", AppConstants.MOBILE_USER_AGENT);
 			Header cookie = new BasicHeader("Cookie", cookieStr);
@@ -190,53 +193,34 @@ public class ExFsParser implements Parser {
 			getRequest.addHeader(cookie);
 			getRequest.addHeader(referer);
 			HttpResponse response = client.execute(getRequest);
-			for(Header header: Arrays.asList(response.getHeaders("Set-Cookie"))) {
-				if(header.getValue().contains("_moon_session=") && !cookieStr.contains("_moon_session=")) {
-					cookieStr = cookieStr + header.getValue().split(";")[0] + "; ";
-					break;
-				}
-			}
-			cookie = new BasicHeader("Cookie", cookieStr);
-			referer = new BasicHeader("Referer", iframeLink);
-			String webcontent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
-			String videolistUrl = parseStringByTemplate("(http:\\/\\/[a-zA-Z0-9\\W]+?)\\/", iframeLink) + "/sessions/new_session";
-			System.out.println("URL - " + videolistUrl);
-			HttpPost postRequest = new HttpPost(videolistUrl);
-			postRequest.setEntity(new UrlEncodedFormEntity(getFormDataForPostRequest(webcontent)));
-			postRequest.addHeader(userAgent);
-			postRequest.addHeader(cookie);
-			postRequest.addHeader(referer);
-			postRequest.addHeader("X-Condition-Safe", "Normal");
-			postRequest.addHeader("X-Requested-With", "XMLHttpRequest");
-			response = client.execute(postRequest);
-			webcontent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
-			JsonParser jsonP = new JsonParser();
-			JsonObject jsonObj = jsonP.parse(webcontent).getAsJsonObject();
-			//videoList.add(new VideoTranslationType().se)
-			System.out.println(jsonObj.getAsJsonObject("mans").getAsJsonPrimitive("manifest_m3u8").getAsString());
+			String respContent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
+			System.out.println("PLAYLIST - " + getPlaylistURL(respContent));
+			getRequest = new HttpGet(getPlaylistURL(respContent));
+			getRequest.addHeader(userAgent);
+			response = client.execute(getRequest);
+			respContent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
+			System.out.println(respContent);
+			VideoLink video = new VideoLink();
+			video.setLink(getPlaylistURL(respContent));
+			VideoTranslationType videoList = new VideoTranslationType();
+			videoList.addVideoLink(video);
+			availablePlaylist.add(videoList);
 			
 		} catch(IOException | UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
-		return videoList;
+		return availablePlaylist;
 	}
-	private List<BasicNameValuePair> getFormDataForPostRequest(String webcontent) {
-		List<BasicNameValuePair> list = new ArrayList<>();
-		list.add(new BasicNameValuePair("video_token", parseStringByTemplate("video_token:\\W'([a-zA-Z0-9]+)'", webcontent)));
-		list.add(new BasicNameValuePair("content_type", parseStringByTemplate("content_type:\\W'([a-zA-Z0-9]+)'", webcontent)));
-		list.add(new BasicNameValuePair("mw_key", parseStringByTemplate("mw_key:\\W'([a-zA-Z0-9]+)'", webcontent)));
-		list.add(new BasicNameValuePair("mw_pid", parseStringByTemplate("mw_pid:\\W([a-zA-Z0-9]+)", webcontent)));
-		list.add(new BasicNameValuePair("p_domain_id", parseStringByTemplate("p_domain_id:\\W([a-zA-Z0-9]+)", webcontent)));
-		list.add(new BasicNameValuePair("debug", parseStringByTemplate("debug:\\W([a-zA-Z0-9]+)", webcontent)));
-		list.add(new BasicNameValuePair("condition_safe", parseStringByTemplate("condition_safe\\W=\\W'([a-zA-Z0-9]+)", webcontent)));
-		list.add(new BasicNameValuePair("ad_attr:", "0"));
-		return list;
+	private String getPlaylistURL(String webcontent) {
+		String mwPid = parseStringByTemplate("mw_pid:\\W([a-zA-Z0-9]+)", webcontent);
+		String videoToken = parseStringByTemplate("video_token:\\W'([a-zA-Z0-9]+)'", webcontent);
+		return EXFS_PLAYLIST_URL.replaceFirst("VIDEOTOKEN", videoToken).replaceFirst("PIDTOKEN", mwPid);
 	}
 	private String parseStringByTemplate(String template, String content) {
 		Pattern regex = Pattern.compile(template);
 		Matcher m = regex.matcher(content);
 		if(m.find()) {
-			System.out.println(m.group(1));
+			System.out.println("Parsed - " + m.group(1));
 			return m.group(1);
 		}
 		return "";
