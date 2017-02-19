@@ -157,10 +157,15 @@ public class MainApp extends Application {
 			mediaPlayer.setMainApp(this);
 			mediaPlayer.initializeMediaPlayer(video, streamType);
 			mediaPlayerPane.setStyle("-fx-background-color: Black");
+			//mediaPlayerPane.setMinSize(840, 580);
+			//mediaPlayerPane.setPrefSize(840, 580);
+			//mediaPlayerPane.setMaxSize(840, 580);
 			Scene videoScene = new Scene(mediaPlayerPane);
 			videoScene.setFill(Color.BLACK);
 			playerStage.setScene(videoScene);
 			playerStage.setTitle("Player");
+			playerStage.setMinHeight(580);
+			playerStage.setMinWidth(840);
 			playerStage.setOnCloseRequest(e -> {
 				mediaPlayer.disposeMediaPlayer();
 				mediaPlayerPane.getChildren().clear();

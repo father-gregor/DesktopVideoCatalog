@@ -16,6 +16,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -51,6 +52,8 @@ public class MediaPlayerController {
 	private volatile Map<String, String> availableStreams = new LinkedHashMap<>(); 
 	private String videoName;
 	private String streamName;
+	private double mediaHeight = 0;
+	private double mediaWidth = 0;
 	private Thread backgroundThread = null;
 	@FXML
 	private MediaView playerView;
@@ -102,6 +105,20 @@ public class MediaPlayerController {
 					@Override
 					public void run() {
 						Media media = new Media(availableStreams.get("480"));
+						media.widthProperty().addListener((obsr, oldV, newV) -> {
+							System.out.println("Width: " + newV);
+							if(newV.doubleValue() > 0) {
+								mediaWidth = newV.doubleValue();
+								mainApp.getPlayerStage().setWidth(mediaWidth);
+							}
+						});
+						media.heightProperty().addListener((obsr, oldV, newV) -> {
+							System.out.println("Height: " + newV);
+							if(newV.doubleValue() > 0) {
+								mediaHeight = newV.doubleValue() * 1.29d;
+								mainApp.getPlayerStage().setHeight(mediaHeight);
+							}
+						});
 						//Media media = new Media("http://cdn.kinoprofi.org/files/x8xM9QGHIpTn4R3sK6o2ww,1486762627/Sosud.2016.HDRip.flv");
 						//Media media = new Media("file:///E:/Media/20051210-w50s.mp4");
 						//System.out.println(media.getError().getMessage());
@@ -116,8 +133,6 @@ public class MediaPlayerController {
 							player.play();
 						});
 						playerView.setMediaPlayer(player);
-						playerView.setFitHeight(media.getHeight());
-						playerView.setFitWidth(media.getWidth());
 						mainApp.getPlayerStage().setTitle(videoName + " " + streamName);
 					}
 				});
@@ -132,6 +147,7 @@ public class MediaPlayerController {
 	public void createToolbar() {
 		HBox buttonsBox = new HBox();
 		buttonsBox.setStyle("-fx-background-color:" + TOOLBAR_COLOR);
+		buttonsBox.setAlignment(Pos.CENTER_LEFT);
 		Image buttonImage = new Image(this.getClass().getClassLoader().getResourceAsStream("img/toolbar/player_play.png"), 35.0, 35.0, true, true);
 		Button newButton = createToolbarButton(buttonImage);
 		newButton.setOnAction(ae -> {
@@ -171,10 +187,14 @@ public class MediaPlayerController {
 				player.stop();
 		});
 		newButton.setOnAction(ae -> {
-			if(mainApp.getPlayerStage().isFullScreen())
+			if(mainApp.getPlayerStage().isFullScreen()) {
 				mainApp.getPlayerStage().setFullScreen(false);
-			else
+				playerView.setFitWidth(mediaWidth);
+			}
+			else {
 				mainApp.getPlayerStage().setFullScreen(true);
+				playerView.setFitWidth(mainApp.getPlayerStage().getWidth());
+			}
 		});
 		buttonsBox.getChildren().add(newButton);
 		
