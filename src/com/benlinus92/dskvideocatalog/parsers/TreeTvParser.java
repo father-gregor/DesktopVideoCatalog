@@ -53,14 +53,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-public class TreeTvParser implements Parser {
+public class TreeTvParser extends Parser{
 	private final static String TREE_TV_FILMS_URL = "http://tree.tv/films/sortType/new/page/";
 	private final static String TREE_TV_SERIES_URL = "http://tree.tv/serials/sortType/new/page/";
 	private final static String TREE_TV_CARTOONS = "http://tree.tv/multfilms/sortType/new/page/";
 	private final static String TREE_TV_BASIC_URL = "http://tree.tv";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private Map<String, Integer> parserCategoryMap;
-	private List<MediaStream> mediaStreamsList;
 	private List<String> qualityList = Arrays.asList("360", "480", "720", "1080");
 	private int sessionUserId = 203; //basic session id (minimal working number)
 	private String sessionKey = "";
@@ -323,14 +321,6 @@ public class TreeTvParser implements Parser {
 	}
 	private int generateUserId() {
 		return (int)Math.random() * 10000 + 203; 
-	}
-	@Override
-	public List<MediaStream> getMediaStreamsList() {
-		return mediaStreamsList;
-	}
-	@Override
-	public Map<String, Integer> getParserCategoryMap() {
-		return parserCategoryMap;
 	}
 
 	@Override

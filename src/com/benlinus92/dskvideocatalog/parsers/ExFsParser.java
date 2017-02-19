@@ -44,7 +44,7 @@ import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class ExFsParser implements Parser {
+public class ExFsParser extends Parser {
 	private final static String EXFS_FILMS_URL = "http://ex-fs.net/films/page/";
 	private final static String EXFS_SERIES_URL = "http://ex-fs.net/series/page/";
 	private final static String EXFS_CARTOONS_URL = "http://ex-fs.net/cartoon/page/";
@@ -52,8 +52,6 @@ public class ExFsParser implements Parser {
 	private final static String EXFS_PLAYLIST_URL = 
 			"http://cdn.ex-fs.net/video/VIDEOTOKEN/index.m3u8?cd=0&mw_pid=PIDTOKEN&man_type=reorder2&man_arg=2";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.MM.yyyy");
-	private Map<String, Integer> parserCategoryMap;
-	private List<MediaStream> mediaStreamsList;
 	private String cookieStr = "";
 	
 	public ExFsParser() {
@@ -66,11 +64,7 @@ public class ExFsParser implements Parser {
 
 	@Override
 	public String getHtmlContent(String url) throws IOException {
-		int timeout = 6;
-		RequestConfig config = RequestConfig.custom()
-				.setConnectTimeout(1000 * timeout)
-				.setConnectionRequestTimeout(1000 * timeout).build();
-		HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+		HttpClient client = getHttpClient(6);
 		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", AppConstants.MOBILE_USER_AGENT); 
 		HttpResponse response = client.execute(request);
@@ -180,11 +174,7 @@ public class ExFsParser implements Parser {
 	private List<VideoTranslationType> getVideoTranslationList(String originalUrl, String iframeLink, String videoItemName) {
 		List<VideoTranslationType> availablePlaylist = new ArrayList<>();
 		try {
-			int timeout = 6;
-			RequestConfig config = RequestConfig.custom()
-					.setConnectTimeout(1000 * timeout)
-					.setConnectionRequestTimeout(1000 * timeout).build();
-			HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+			HttpClient client = getHttpClient(6);
 			HttpGet getRequest = new HttpGet(iframeLink);
 			getRequest.addHeader(new BasicHeader("User-Agent", AppConstants.MOBILE_USER_AGENT));
 			getRequest.addHeader(new BasicHeader("Cookie", cookieStr));
@@ -193,7 +183,7 @@ public class ExFsParser implements Parser {
 			String respContent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
 			VideoLink video = new VideoLink();
 			video.setLink(getPlaylistURL(respContent));
-			video.setName(videoItemName + "- index.m3u8");
+			video.setName(videoItemName + " - index.m3u8");
 			VideoTranslationType videoList = new VideoTranslationType();
 			videoList.addVideoLink(video);
 			videoList.setTranslationName(videoItemName);
@@ -220,11 +210,7 @@ public class ExFsParser implements Parser {
 	private Map<String, String> getHlsStreamMap(String link) {
 		Map<String, String> availablePlaylist = new LinkedHashMap<>();
 		try {
-			int timeout = 6;
-			RequestConfig config = RequestConfig.custom()
-					.setConnectTimeout(1000 * timeout)
-					.setConnectionRequestTimeout(1000 * timeout).build();
-			HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+			HttpClient client = getHttpClient(6);
 			HttpGet request = new HttpGet(link);
 			request.addHeader("User-Agent", AppConstants.MOBILE_USER_AGENT);
 			HttpResponse response = client.execute(request);
@@ -246,16 +232,6 @@ public class ExFsParser implements Parser {
 	@Override
 	public Map<String, String> getVideoStreamMap(VideoLink video, MediaStream type) {
 		return getHlsStreamMap(video.getLink());
-	}
-
-	@Override
-	public List<MediaStream> getMediaStreamsList() {
-		return mediaStreamsList;
-	}
-
-	@Override
-	public Map<String, Integer> getParserCategoryMap() {
-		return parserCategoryMap;
 	}
 
 	@Override

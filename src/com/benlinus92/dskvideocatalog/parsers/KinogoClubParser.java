@@ -40,13 +40,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-public class KinogoClubParser implements Parser {
+public class KinogoClubParser extends Parser {
 	private final static String KINOGO_BASIC_URL = "http://kinogo.club";
 	private final static String KINOGO_FILMS_URL = "http://kinogo.club/page/";
 	private final static String KINOGO_SERIES_URL = "http://kinogo.club/zarubezhnye_serialy/page/";
 	private final static String KINOGO_CARTOONS_URL = "http://kinogo.club/multfilmy/page/";
-	private List<MediaStream> mediaStreamsList;
-	private Map<String, Integer> parserCategoryMap;
 
 	public KinogoClubParser() {
 		mediaStreamsList = Arrays.asList(MediaStream.FLV);
@@ -85,7 +83,7 @@ public class KinogoClubParser implements Parser {
 				url = KINOGO_SERIES_URL;
 			else if(category == AppConstants.CATEGORY_CARTOONS)
 				url = KINOGO_CARTOONS_URL;
-			String html = getHtmlContent(url + Integer.toString(page));
+			String html = getHtmlContent(url + Integer.toString(page) + "/");
 			Document content = Jsoup.parse(html);
 			for(Element elem: content.select("div.shortstory")) {
 				itemsList.add(createCatalogVideoItemFromHtml(elem));
@@ -281,16 +279,6 @@ public class KinogoClubParser implements Parser {
 		Map<String, String> availableVideoMap = new LinkedHashMap<>();
 		availableVideoMap.put("480", video.getLink());
 		return availableVideoMap;
-	}
-
-	@Override
-	public List<MediaStream> getMediaStreamsList() {
-		return mediaStreamsList;
-	}
-
-	@Override
-	public Map<String, Integer> getParserCategoryMap() {
-		return parserCategoryMap;
 	}
 
 	@Override
