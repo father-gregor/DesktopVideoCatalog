@@ -12,7 +12,7 @@
    <children>
       <SplitPane fx:id="menuSplitPane" dividerPositions="0.30451127819548873" prefHeight="300.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="298.0" prefWidth="239.0">
+          <AnchorPane maxWidth="239.0" minHeight="0.0" minWidth="239.0" prefHeight="298.0" prefWidth="239.0">
                <children>
                   <VBox layoutY="54.0" prefHeight="544.0" prefWidth="239.0" spacing="1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="54.0">
                      <children>

@@ -14,6 +14,12 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+/*
+ * Util class for loading and storage different application's parameters.
+ * Parameters is located in application.properties and user.properties files.
+ * After retrieving they are stored in {@link Map} and {@link ResourceBundle}.
+ * Class is responsible for setting locale parameter for different localizations.
+ */
 public class PropertiesHandler {
 	private static PropertiesHandler instance = null;
 	private String appPropFilename = "application.properties";

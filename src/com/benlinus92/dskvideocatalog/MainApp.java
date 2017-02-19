@@ -1,7 +1,5 @@
 package com.benlinus92.dskvideocatalog;
 
-import java.awt.Desktop;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +36,13 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sun.applet.Main;
 
+/*
+ * Main class which instantiate and start the application. It extends {@link Application}
+ * to bootstrap application via start() method. Contains object of all main Stage in app.
+ * Instance of this class is send to different controller classes to enable communication
+ * between them and primaryStage. MainApp contains a number of methods for initializing new 
+ * interface nodes and connect them to primaryStage
+ */
 public class MainApp extends Application {
 
 	private Stage primaryStage;
@@ -75,7 +80,7 @@ public class MainApp extends Application {
 			root.setMainApp(this);
 			primaryStage.setScene(new Scene(mainLayout));
 			primaryStage.setMaxHeight(1300.0);
-			primaryStage.setMaxWidth(1500.0);
+			//primaryStage.setMaxWidth(1500.0);
 			primaryStage.setMinHeight(600.0);
 			primaryStage.setMinWidth(750.0);
 			primaryStage.setOnCloseRequest(e -> Platform.exit());

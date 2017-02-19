@@ -230,6 +230,7 @@ public class TreeTvParser extends Parser{
 				Pattern regex = Pattern.compile("RESOLUTION=[0-9]+?x([0-9]+)");
 				Matcher m = regex.matcher(line);
 				if(m.find()) {
+					System.out.println(line.substring(line.indexOf("http://")).trim());
 					availablePlaylist.put(m.group(1), line.substring(line.indexOf("http://")).trim());
 				}
 			}

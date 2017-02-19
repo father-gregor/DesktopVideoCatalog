@@ -5,6 +5,10 @@ import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 
 import javafx.scene.layout.Pane;
 
+/*
+ * This class responsible for holding objects of current using parser,
+ * pane in catalog and category number such as film, series etc.
+ */
 public class CatalogStateHandler {
 	private int categoryState;
 	private Parser parserState;
