@@ -140,7 +140,7 @@ public class ExFsParser implements Parser {
 			item = createBrowserVideoItemFromHtml(content.select("div#dle-content").first());
 			for(Element elem: content.select("div#rightholder iframe")) {
 				if(!elem.attr("src").isEmpty() && !elem.attr("src").contains("serial") && item != null)
-					item.setVideoTransTypeList(getVideoTranslationList(url, elem.attr("src"))); //videolist can only be retrieved by different link
+					item.setVideoTransTypeList(getVideoTranslationList(url, elem.attr("src"), item.getTitle() + " (" + item.getYear() + ")"));
 			}
 		} catch(ClientProtocolException e) {
 			e.printStackTrace();
@@ -177,33 +177,26 @@ public class ExFsParser implements Parser {
 		return item;
 	}
 	
-	private List<VideoTranslationType> getVideoTranslationList(String originalUrl, String iframeLink) {
+	private List<VideoTranslationType> getVideoTranslationList(String originalUrl, String iframeLink, String videoItemName) {
 		List<VideoTranslationType> availablePlaylist = new ArrayList<>();
 		try {
-			Header userAgent = new BasicHeader("User-Agent", AppConstants.MOBILE_USER_AGENT);
-			Header cookie = new BasicHeader("Cookie", cookieStr);
-			Header referer = new BasicHeader("Referer", originalUrl);
 			int timeout = 6;
 			RequestConfig config = RequestConfig.custom()
 					.setConnectTimeout(1000 * timeout)
 					.setConnectionRequestTimeout(1000 * timeout).build();
 			HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 			HttpGet getRequest = new HttpGet(iframeLink);
-			getRequest.addHeader(userAgent);
-			getRequest.addHeader(cookie);
-			getRequest.addHeader(referer);
+			getRequest.addHeader(new BasicHeader("User-Agent", AppConstants.MOBILE_USER_AGENT));
+			getRequest.addHeader(new BasicHeader("Cookie", cookieStr));
+			getRequest.addHeader(new BasicHeader("Referer", originalUrl));
 			HttpResponse response = client.execute(getRequest);
 			String respContent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
-			System.out.println("PLAYLIST - " + getPlaylistURL(respContent));
-			getRequest = new HttpGet(getPlaylistURL(respContent));
-			getRequest.addHeader(userAgent);
-			response = client.execute(getRequest);
-			respContent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
-			System.out.println(respContent);
 			VideoLink video = new VideoLink();
 			video.setLink(getPlaylistURL(respContent));
+			video.setName(videoItemName + "- index.m3u8");
 			VideoTranslationType videoList = new VideoTranslationType();
 			videoList.addVideoLink(video);
+			videoList.setTranslationName(videoItemName);
 			availablePlaylist.add(videoList);
 			
 		} catch(IOException | UnsupportedOperationException e) {
@@ -220,20 +213,39 @@ public class ExFsParser implements Parser {
 		Pattern regex = Pattern.compile(template);
 		Matcher m = regex.matcher(content);
 		if(m.find()) {
-			System.out.println("Parsed - " + m.group(1));
 			return m.group(1);
 		}
 		return "";
 	}
 	private Map<String, String> getHlsStreamMap(String link) {
-		Map<String, String> videoMap = new LinkedHashMap<>();
-		return videoMap;
+		Map<String, String> availablePlaylist = new LinkedHashMap<>();
+		try {
+			int timeout = 6;
+			RequestConfig config = RequestConfig.custom()
+					.setConnectTimeout(1000 * timeout)
+					.setConnectionRequestTimeout(1000 * timeout).build();
+			HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+			HttpGet request = new HttpGet(link);
+			request.addHeader("User-Agent", AppConstants.MOBILE_USER_AGENT);
+			HttpResponse response = client.execute(request);
+			String respContent = EntityUtils.toString(response.getEntity());
+			System.out.println("Check - " + respContent);
+			for(String line: respContent.split("#EXT-X-STREAM-INF:")) {
+				Pattern regex = Pattern.compile("RESOLUTION=[0-9]+?x([0-9]+)");
+				Matcher m = regex.matcher(line);
+				System.out.println(line + " size - " + availablePlaylist.size());
+				if(m.find()) {
+					availablePlaylist.put(m.group(1), line.substring(line.indexOf("http://")).trim());
+				}
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return availablePlaylist;
 	}
 	@Override
 	public Map<String, String> getVideoStreamMap(VideoLink video, MediaStream type) {
-		Map<String, String> availableVideoMap = new LinkedHashMap<>();
-		getHlsStreamMap(video.getLink());
-		return null;
+		return getHlsStreamMap(video.getLink());
 	}
 
 	@Override

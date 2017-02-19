@@ -180,7 +180,7 @@ public class KinogoClubParser implements Parser {
 			if(m.find()) {
 				VideoTranslationType videoTr = new VideoTranslationType();
 				videoTr.setVideosList(decodeBase64VideoUrlList(m.group(1)));
-				videoTr.setType(item.getTitle());
+				videoTr.setTranslationName(item.getTitle());
 				List<VideoTranslationType> videoList = new ArrayList<>();
 				videoList.add(videoTr);
 				item.setVideoTransTypeList(videoList);

@@ -289,7 +289,7 @@ public class TreeTvParser implements Parser {
 		List<VideoTranslationType> typeList = new ArrayList<>();
 		for(int i = 0; i < transItemsSize; i++) {
 			VideoTranslationType newItem = new VideoTranslationType();
-			newItem.setType(el.select("div.accordion_head").get(i).select("a").attr("title"));
+			newItem.setTranslationName(el.select("div.accordion_head").get(i).select("a").attr("title"));
 			for(Element e: el.select("div.accordion_content").get(i).select("div.accordion_content_item")) {
 				VideoLink newLink = new VideoLink();
 				newLink.setName(e.select("div.film_title a").text());
