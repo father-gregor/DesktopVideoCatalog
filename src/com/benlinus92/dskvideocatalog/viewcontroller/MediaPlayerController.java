@@ -227,7 +227,6 @@ public class MediaPlayerController {
 	private Slider createVolumeSlider() {
 		Slider slider = new Slider(0.0, 1.0, DEFAULT_VOLUME);
 		slider.valueProperty().addListener((observable, oldV, newV) -> {
-			System.out.println(newV.doubleValue());
 			player.setVolume(newV.doubleValue());
 		});
 		return slider;

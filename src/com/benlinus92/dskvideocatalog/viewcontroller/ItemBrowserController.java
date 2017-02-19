@@ -87,7 +87,7 @@ public class ItemBrowserController {
 			VBox vbox = new VBox();
 			for(VideoTranslationType typeItem: item.getVideoTransTypeList()) {
 				BorderPane typePane = new BorderPane();
-				typePane.setLeft(new Label(typeItem.getType()));
+				typePane.setLeft(new Label(typeItem.getTranslationName()));
 				typePane.setUserData(typeItem.getVideosList());
 				VBox mediaStreamsBox = new VBox(); 
 				mediaStreamsBox.setUserData(typeItem);
