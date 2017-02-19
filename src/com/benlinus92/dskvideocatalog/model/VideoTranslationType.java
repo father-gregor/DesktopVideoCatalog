@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VideoTranslationType {
-	private String translation = "";
+	private String translationName = "";
 	private List<VideoLink> videosList = null;
-	public String getType() {
-		return translation;
+	public String getTranslationName() {
+		return translationName;
 	}
-	public void setType(String type) {
-		this.translation = type;
+	public void setTranslationName(String name) {
+		this.translationName = name;
 	}
 	public List<VideoLink> getVideosList() {
 		if(videosList == null)
