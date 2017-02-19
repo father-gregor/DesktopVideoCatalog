@@ -3,7 +3,9 @@ package com.benlinus92.dskvideocatalog.viewcontroller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -46,6 +48,7 @@ public class CatalogController {
 	private int currentCategory = AppConstants.CATEGORY_FILMS;
 	private int currentPage = 1;
 	private Thread backgroundThread = null;
+	private List<ImageView> imageHolder = new CopyOnWriteArrayList<>();
 	
 	public CatalogController() {
 		
@@ -76,10 +79,11 @@ public class CatalogController {
 			public void run() {
 				List<SimpleVideoItem> items = mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage);
 				List<GridPane> gridItemsList = new ArrayList<>();
-				for(SimpleVideoItem itemObj: items) {
+				for(SimpleVideoItem itemObj: mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage)) {
 					gridItemsList.add(createGridForVideoItem(itemObj));
 				}
 				currentPage++;
+				loadImagesAsync();
 				System.out.println(currentPage);
 				Platform.runLater(new Runnable() {	
 					@Override
@@ -91,6 +95,7 @@ public class CatalogController {
 			}
 		};
 		if(!backgroundThread.isAlive()) {
+			clearImageHolder();
 			backgroundThread = new Thread(task);
 			backgroundThread.setDaemon(true);
 			backgroundThread.start();
@@ -103,12 +108,14 @@ public class CatalogController {
 	}
 	private GridPane createGridForVideoItem(SimpleVideoItem itemObj) {
 		GridPane videoItemPane = new GridPane();
-		Image image = new Image(itemObj.getPrevImg());
+		/*Image image = new Image(itemObj.getPrevImg());
 		if(image.isError())
-			image = downloadImageWithHttpClient(itemObj.getPrevImg());
-		ImageView itemImage = new ImageView(image);
+			image = downloadImageWithHttpClient(itemObj.getPrevImg());*/
+		ImageView itemImage = new ImageView();//image
 		itemImage.setFitWidth(135.0);
 		itemImage.setFitHeight(180.0);
+		itemImage.setUserData(itemObj.getPrevImg());
+		addImageToHolder(itemImage);
 		Label itemTitle = new Label(itemObj.getTitle());
 		itemTitle.setMaxWidth(Double.MAX_VALUE);
 		itemTitle.setAlignment(Pos.CENTER);
@@ -125,12 +132,34 @@ public class CatalogController {
 		videoItemPane.setOnMouseClicked(new VideoItemClickedEventHandler());
 		return videoItemPane;
 	}
+	private void loadImagesAsync() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for(ImageView imageV: imageHolder) {
+					String imgLink = (String)imageV.getUserData();
+					if(imgLink != null) {
+						Image image = new Image(imgLink);
+						if(image.isError())
+							image = downloadImageWithHttpClient(imgLink);
+						imageV.setImage(image);
+					}
+				}
+			}
+		}).start();
+	}
 	public void setCurrentCategory(int category) {
 		this.currentPage = 1;
 		this.currentCategory = category;
 	}
 	public int getCurrentCategory() {
 		return currentCategory;
+	}
+	private synchronized void addImageToHolder(ImageView image) {
+		imageHolder.add(image);
+	}
+	private synchronized void clearImageHolder() {
+		imageHolder.clear();
 	}
 	private Image downloadImageWithHttpClient(String url) {
 		Image image = null;
@@ -152,10 +181,6 @@ public class CatalogController {
 			System.out.println("Clicked");
 			System.out.println( ((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getTitle() );
 			mainApp.openItemBrowser(((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getUrl());
-			System.out.println("Cleared");
-			System.out.println("MEMORY: " + mainApp.getRuntime().freeMemory());
-			//mainTilePane.getChildren().clear();
-			System.out.println("MEMORY: " + mainApp.getRuntime().freeMemory());
 		}
 	}
 }
