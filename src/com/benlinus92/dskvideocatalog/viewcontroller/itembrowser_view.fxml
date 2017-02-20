@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
@@ -37,7 +38,6 @@
                               <RowConstraints maxHeight="348.0" minHeight="10.0" prefHeight="193.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <ImageView fx:id="posterImage" fitHeight="280.0" fitWidth="198.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="TOP" />
                               <Label alignment="TOP_LEFT" prefHeight="21.0" prefWidth="423.0" text="Сюжет:" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
                               <Label alignment="TOP_LEFT" prefHeight="42.0" prefWidth="278.0" text="Жанр:" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
                               <Label alignment="TOP_LEFT" prefHeight="61.0" prefWidth="110.0" text="Год:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -55,14 +55,25 @@
                               <Label fx:id="castLabel" alignment="TOP_LEFT" prefHeight="67.0" prefWidth="370.0" text="Текст" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="7" />
                               <Label fx:id="plotLabel" alignment="TOP_LEFT" prefHeight="152.0" prefWidth="531.0" text="Текст" wrapText="true" GridPane.columnSpan="3" GridPane.rowIndex="9" />
                               <Label fx:id="titleLabel" alignment="CENTER" prefHeight="61.0" prefWidth="335.0" text="Текст" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="2" />
+                              <ImageView fx:id="posterImage" fitHeight="280.0" fitWidth="198.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="3">
+                                 <GridPane.margin>
+                                    <Insets left="10.0" top="15.0" />
+                                 </GridPane.margin>
+                              </ImageView>
                            </children>
                         </GridPane>
-                     </children></AnchorPane>
+                     </children>
+                     <padding>
+                        <Insets left="15.0" right="15.0" top="15.0" />
+                     </padding></AnchorPane>
             </content>
           </Tab>
           <Tab text="Ссылки">
                <content>
-                  <ScrollPane fx:id="linksPane" prefHeight="200.0" prefWidth="200.0" />
+                  <ScrollPane fx:id="linksPane" fitToHeight="true" fitToWidth="true">
+                     <padding>
+                        <Insets left="15.0" right="15.0" top="15.0" />
+                     </padding></ScrollPane>
                </content>
           </Tab>
         </tabs>

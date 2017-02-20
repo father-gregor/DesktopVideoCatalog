@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="listPane" prefHeight="481.0" prefWidth="422.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benlinus92.dskvideocatalog.viewcontroller.VideoListController">
-   <children>
-      <ScrollPane fx:id="listScrollPane" fitToHeight="true" layoutX="3.0" layoutY="4.0" prefHeight="473.0" prefWidth="416.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="3.0" />
-   </children>
-</AnchorPane>
+<ScrollPane fx:id="listScrollPane" fitToHeight="true" layoutX="3.0" layoutY="4.0" prefHeight="473.0" prefWidth="416.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benlinus92.dskvideocatalog.viewcontroller.VideoListController">
+   <padding>
+      <Insets left="15.0" right="15.0" top="15.0" />
+   </padding>
+</ScrollPane>
