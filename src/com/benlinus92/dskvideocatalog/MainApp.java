@@ -24,6 +24,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -141,7 +142,7 @@ public class MainApp extends Application {
 			//Desktop.getDesktop().open(new File("E:/Media/se-12-01_lostfilm.flv"));
 			FXMLLoader fxml = new FXMLLoader();
 			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.videolist")));
-			AnchorPane videoListPane = (AnchorPane)fxml.load();
+			ScrollPane videoListPane = (ScrollPane)fxml.load();
 			videoList = fxml.getController();
 			videoList.setMainApp(this);
 			videoList.initializeVideoList(videoItem, streamType);

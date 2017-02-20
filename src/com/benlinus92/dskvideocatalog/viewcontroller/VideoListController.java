@@ -57,8 +57,6 @@ public class VideoListController {
 	@FXML
 	private ScrollPane listScrollPane;
 	@FXML
-	private AnchorPane listPane;
-	@FXML
 	private void initialize() {
 		
 	}

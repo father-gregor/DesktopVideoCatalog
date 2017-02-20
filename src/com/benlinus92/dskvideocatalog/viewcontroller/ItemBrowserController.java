@@ -17,6 +17,7 @@ import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -114,6 +115,8 @@ public class ItemBrowserController {
 		}
 	}
 	public void loadNewItemInBrowser(String url) {
+		tabPane.getSelectionModel().select(1);//select second tab to set its initial links list
+		tabPane.getSelectionModel().getSelectedItem().setContent(linksPane);
 		tabPane.getSelectionModel().select(0);//select first tab always
 		setCurrentItemUrl(url);
 		updateItemBrowser();
@@ -136,9 +139,8 @@ public class ItemBrowserController {
 	public void setMainApp(MainApp app) {
 		this.mainApp = app;
 	}
-	public void setLinksTabContent(Pane tab) {
-		tab.setPrefWidth(linksPane.getWidth());
-		linksPane.setContent(tab);
+	public void setLinksTabContent(Node tab) {
+		tabPane.getSelectionModel().getSelectedItem().setContent(tab);
 	}
 	private class MediaStreamListOpenedEventHandler implements EventHandler<MouseEvent> {
 		@Override
