@@ -1,2 +1,4 @@
-[INFO ] 2017-03-04 23:18:58.999 [JavaFX Application Thread] MainApp - Base window loaded
-[INFO ] 2017-03-04 23:18:59.042 [JavaFX Application Thread] MainApp - Catalog panel loaded
+[INFO ] 2017-03-04 23:49:54.320 [JavaFX Application Thread] MainApp - Base window loaded
+[ERROR] 2017-03-04 23:49:54.366 [JavaFX Application Thread] CatalogController - Exception occured - Error happened
+[INFO ] 2017-03-04 23:49:54.367 [JavaFX Application Thread] MainApp - Catalog panel loaded
+[INFO ] 2017-03-04 23:49:56.458 [JavaFX Application Thread] CatalogController - Items loaded

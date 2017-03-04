@@ -1,6 +1,7 @@
 package com.benlinus92.dskvideocatalog;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ import sun.applet.Main;
  */
 public class MainApp extends Application {
 
-	private static final Logger logger = LogManager.getLogger();
+	private final Logger logger = LogManager.getLogger();
 	
 	private Stage primaryStage;
 	private Stage playerStage;
@@ -92,7 +93,7 @@ public class MainApp extends Application {
 			primaryStage.setOnCloseRequest(e -> Platform.exit());
 			logger.info("Base window loaded");
 		} catch(IOException e) {
-			e.printStackTrace();
+			logger.error("Exception occured - {}", e.getMessage());
 		}
 	}
 	private void initCatalogLayout() {

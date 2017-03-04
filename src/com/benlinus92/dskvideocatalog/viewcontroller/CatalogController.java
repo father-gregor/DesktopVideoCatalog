@@ -13,6 +13,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.MainApp;
@@ -37,6 +39,7 @@ import javafx.scene.layout.TilePane;
 
 public class CatalogController {
 	
+	private final Logger logger = LogManager.getLogger();
 	private MainApp mainApp;
 	@FXML
 	private TilePane mainTilePane;
@@ -90,6 +93,7 @@ public class CatalogController {
 					public void run() {
 						mainTilePane.getChildren().addAll(gridItemsList);
 						scrollCatalogPane.vvalueProperty().addListener(scrollMaxEvent);
+						logger.info("Items loaded");
 					}
 				});
 			}
