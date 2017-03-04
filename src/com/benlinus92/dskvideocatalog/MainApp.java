@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
 import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
@@ -46,6 +49,8 @@ import sun.applet.Main;
  */
 public class MainApp extends Application {
 
+	private static final Logger logger = LogManager.getLogger();
+	
 	private Stage primaryStage;
 	private Stage playerStage;
 	private Stage settingsStage;
@@ -85,6 +90,7 @@ public class MainApp extends Application {
 			primaryStage.setMinHeight(600.0);
 			primaryStage.setMinWidth(750.0);
 			primaryStage.setOnCloseRequest(e -> Platform.exit());
+			logger.info("Base window loaded");
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -97,8 +103,9 @@ public class MainApp extends Application {
 			catalog = fxml.getController();
 			catalog.setMainApp(this);
 			catalog.startUpdateCatalogThread();
+			logger.info("Catalog panel loaded");
 		} catch(IOException e) {
-			e.printStackTrace();
+			logger.error("Exception occured - {}", e.getMessage());
 		}
 	}
 	private void initItemBrowserLayout() {
