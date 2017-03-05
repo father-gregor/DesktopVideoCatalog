@@ -3,9 +3,7 @@ package com.benlinus92.dskvideocatalog.parsers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -15,14 +13,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -40,6 +36,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+/*
+ * Class responsible for parsing kinogo.club website's video collection. Extends {@link Parser} class.
+ * It has methods for retrieving data from site and parsing it with {@link org.jsoup.Jsoup}.
+ */
 public class KinogoClubParser extends Parser {
 	private final static String KINOGO_BASIC_URL = "http://kinogo.club";
 	private final static String KINOGO_FILMS_URL = "http://kinogo.club/page/";

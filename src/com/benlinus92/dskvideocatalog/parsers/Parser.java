@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
@@ -16,6 +14,10 @@ import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
 
+/*
+ * Abstract class which declare abstract methods for sites parsing. Also contains a few
+ * concrete util methods that used by every parser implementation.
+ */
 public abstract class Parser {
 	protected Map<String, Integer> parserCategoryMap;
 	protected List<MediaStream> mediaStreamsList;

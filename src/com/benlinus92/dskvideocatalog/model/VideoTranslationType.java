@@ -3,6 +3,10 @@ package com.benlinus92.dskvideocatalog.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * Store list of {@link VideoLink} objects alongside with information
+ * about translation.
+ */
 public class VideoTranslationType {
 	private String translationName = "";
 	private List<VideoLink> videosList = null;

@@ -1,17 +1,12 @@
 package com.benlinus92.dskvideocatalog.viewcontroller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,8 +14,6 @@ import org.apache.logging.log4j.Logger;
 import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.MainApp;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
-import com.benlinus92.dskvideocatalog.parsers.Parser;
-import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -37,6 +30,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 
+/*
+ * Class controls layout and functionality of main catalog pane. It calls
+ * current parser's methods to get list of video items from current website.
+ * Items from list then added to {@link TilePane} instance as layout objects.
+ */
 public class CatalogController {
 	
 	private final Logger logger = LogManager.getLogger();
@@ -80,7 +78,7 @@ public class CatalogController {
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
-				List<SimpleVideoItem> items = mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage);
+				//List<SimpleVideoItem> items = mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage);
 				List<GridPane> gridItemsList = new ArrayList<>();
 				for(SimpleVideoItem itemObj: mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage)) {
 					gridItemsList.add(createGridForVideoItem(itemObj));

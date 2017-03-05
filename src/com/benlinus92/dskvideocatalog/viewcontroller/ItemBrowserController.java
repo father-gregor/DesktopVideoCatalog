@@ -1,7 +1,6 @@
 package com.benlinus92.dskvideocatalog.viewcontroller;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -10,26 +9,27 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.benlinus92.dskvideocatalog.MainApp;
 import com.benlinus92.dskvideocatalog.model.BrowserVideoItem;
 import com.benlinus92.dskvideocatalog.model.MediaStream;
-import com.benlinus92.dskvideocatalog.model.VideoLink;
 import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
-import com.benlinus92.dskvideocatalog.parsers.Parser;
-import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
+/*
+ * Class control process of item browser creation. Item browser is responsible
+ * for displaying single video item's information, such as director, cast, plot etc.
+ * Class interacts with {@link Parser} class implementations to get all available
+ * information about video origins. Then controller constructs {@link GridPane} layout
+ * from received list. 
+ */
 public class ItemBrowserController {
 
 	private MainApp mainApp;

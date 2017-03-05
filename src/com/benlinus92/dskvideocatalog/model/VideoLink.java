@@ -1,5 +1,8 @@
 package com.benlinus92.dskvideocatalog.model;
 
+/*
+ * Store link to actual videofile or playlist media of item.
+ */
 public class VideoLink {
 	private String id = "";
 	private String videoName = "";

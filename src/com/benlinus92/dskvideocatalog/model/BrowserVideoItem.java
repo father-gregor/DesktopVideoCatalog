@@ -8,6 +8,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/*
+ * Class represents single video which is showing in item browser.
+ */
 public class BrowserVideoItem extends SimpleVideoItem {
 	private ObjectProperty<List<String>> genre = new SimpleObjectProperty<>();
 	private StringProperty country = new SimpleStringProperty("");

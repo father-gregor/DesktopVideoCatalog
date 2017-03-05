@@ -6,6 +6,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 
+/*
+ * Controller class for choosing video opening technique. Contains options
+ * for internal, web and user defined player. Additionally give option to 
+ * copy link of desired video.
+ */
 public class ChooseMediaMenuController {
 
 	private VideoListController mainCaller;

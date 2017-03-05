@@ -3,15 +3,10 @@ package com.benlinus92.dskvideocatalog.parsers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -33,12 +24,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.benlinus92.dskvideocatalog.AppConstants;
 import com.benlinus92.dskvideocatalog.PropertiesHandler;
@@ -53,6 +42,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+/*
+ * Class responsible for parsing tree.tv website's video collection. Extends {@link Parser} class.
+ * It has methods for retrieving data from site and parsing it with {@link org.jsoup.Jsoup}.
+ */
 public class TreeTvParser extends Parser{
 	private final static String TREE_TV_FILMS_URL = "http://tree.tv/films/sortType/new/page/";
 	private final static String TREE_TV_SERIES_URL = "http://tree.tv/serials/sortType/new/page/";

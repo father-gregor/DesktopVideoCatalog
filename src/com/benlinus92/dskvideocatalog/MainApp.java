@@ -1,7 +1,6 @@
 package com.benlinus92.dskvideocatalog;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
 import com.benlinus92.dskvideocatalog.parsers.Parser;
 import com.benlinus92.dskvideocatalog.parsers.TreeTvParser;
 import com.benlinus92.dskvideocatalog.viewcontroller.CatalogController;
-import com.benlinus92.dskvideocatalog.viewcontroller.ChooseMediaMenuController;
 import com.benlinus92.dskvideocatalog.viewcontroller.ItemBrowserController;
 import com.benlinus92.dskvideocatalog.viewcontroller.MediaPlayerController;
 import com.benlinus92.dskvideocatalog.viewcontroller.RootWindowController;
@@ -23,13 +21,9 @@ import com.benlinus92.dskvideocatalog.viewcontroller.VideoListController;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -38,15 +32,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import sun.applet.Main;
 
 /*
  * Main class which instantiate and start the application. It extends {@link Application}
  * to bootstrap application via start() method. Contains object of all main Stage in app.
  * Instance of this class is send to different controller classes to enable communication
  * between them and primaryStage. MainApp contains a number of methods for initializing new 
- * interface nodes and connect them to primaryStage
+ * interface nodes and connect them to primaryStage.
  */
 public class MainApp extends Application {
 

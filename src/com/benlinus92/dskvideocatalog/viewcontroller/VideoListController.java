@@ -1,9 +1,7 @@
 package com.benlinus92.dskvideocatalog.viewcontroller;
 
 import java.awt.Desktop;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -24,28 +22,29 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker.State;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import netscape.javascript.JSObject;
 
+/*
+ * Class for displaying list of video files associated with chosen item.
+ * Based on the outcome of {@link ChooseMediaMenuController} window, class
+ * initialize one of the available streaming options: internal player, web player,
+ * user-defined player, copy link and open in browser. Each option is defined
+ * in its own method. 
+ */
 public class VideoListController {
 	private MainApp mainApp;
 	private VideoLink selectedVideo; 

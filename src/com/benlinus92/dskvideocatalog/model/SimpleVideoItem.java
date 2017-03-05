@@ -1,13 +1,16 @@
 package com.benlinus92.dskvideocatalog.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/*
+ * Class represents video in general catalog panel {@link CatalogController}.
+ * Store minimum amount of information about preview image, link etc. 
+ */
 public class SimpleVideoItem {
 	private StringProperty title = new SimpleStringProperty("");
 	private StringProperty year = new SimpleStringProperty("");

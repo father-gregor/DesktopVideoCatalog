@@ -27,6 +27,13 @@ import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 
+/*
+ * Responsible for creation and controlling of internal media player.
+ * Media player implemented via JavaFX classes {@link Media}, {@link MediaPlayer}
+ * and {@link MediaView}. Class initialize player with video file from received link,
+ * build player toolbar layout and declare event listeners for typical player's events
+ * such as pausing, fullwindow mode, seeking position and volume slider.
+ */
 public class MediaPlayerController {
 
 	private final static String TOOLBAR_COLOR = "#ced5e0";

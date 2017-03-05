@@ -14,6 +14,10 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
+/*
+ * Controller for settings window. Save user-defined settings to
+ * properties file.
+ */
 public class SettingsController {
 	private MainApp mainApp;
 	@FXML

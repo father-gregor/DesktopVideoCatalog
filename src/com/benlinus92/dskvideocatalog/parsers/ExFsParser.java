@@ -2,9 +2,7 @@ package com.benlinus92.dskvideocatalog.parsers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,17 +15,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -41,9 +33,11 @@ import com.benlinus92.dskvideocatalog.model.MediaStream;
 import com.benlinus92.dskvideocatalog.model.SimpleVideoItem;
 import com.benlinus92.dskvideocatalog.model.VideoLink;
 import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
+/*
+ * Class responsible for parsing ex-fs.net website's video collection. Extends {@link Parser} class.
+ * It has methods for retrieving data from site and parsing it with {@link org.jsoup.Jsoup}.
+ */
 public class ExFsParser extends Parser {
 	private final static String EXFS_FILMS_URL = "http://ex-fs.net/films/page/";
 	private final static String EXFS_SERIES_URL = "http://ex-fs.net/series/page/";

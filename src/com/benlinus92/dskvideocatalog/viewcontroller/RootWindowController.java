@@ -16,7 +16,6 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,6 +24,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
+/*
+ * Class controlling application basic window, which contains website chooser on
+ * the left and {@link SplitPane} on the right. SplitPane content is vary 
+ * depending on application current state.
+ */
 public class RootWindowController {
 	
 	private MainApp mainApp;
