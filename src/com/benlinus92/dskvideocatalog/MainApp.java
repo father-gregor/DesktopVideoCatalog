@@ -116,22 +116,24 @@ public class MainApp extends Application {
 		try {
 			FXMLLoader fxml = new FXMLLoader();
 			fxml.setLocation(MainApp.class.getResource(PropertiesHandler.getInstance().getAppProperty("view.imageviewerwindow")));
-			AnchorPane imageWindow = (AnchorPane) fxml.load();
-			imageWindow.getChildren().add(new ImageView(image));
+			BorderPane imageWindow = (BorderPane) fxml.load();
+			imageWindow.setCenter(new ImageView(image));
 			imageWindow.setOnScroll(se -> {
                 double zoomFactor = 1.15;
                 double deltaY = se.getDeltaY();
                 if (deltaY < 0){
                   zoomFactor = 2.0 - zoomFactor;
                 }
-                AnchorPane pane = (AnchorPane)se.getSource();
+                BorderPane pane = (BorderPane)se.getSource();
                 pane.setScaleX(pane.getScaleX() * zoomFactor);
                 pane.setScaleY(pane.getScaleY() * zoomFactor);
                 se.consume();
 			});
 			Stage imageStage = new Stage();
 			imageStage.setScene(new Scene(imageWindow));
-			imageStage.setTitle("Image");
+			imageStage.setTitle("Poster");
+			imageStage.setMinHeight(image.getHeight());
+			imageStage.setMinWidth(image.getWidth());
 			imageStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();

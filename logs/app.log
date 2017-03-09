@@ -1,32 +1,3 @@
-[INFO ] 2017-03-09 20:25:29.271 [JavaFX Application Thread] MainApp - Base window loaded
-[INFO ] 2017-03-09 20:25:29.315 [JavaFX Application Thread] MainApp - Catalog panel loaded
-[INFO ] 2017-03-09 20:25:31.334 [JavaFX Application Thread] CatalogController - Items loaded
-[DEBUG] 2017-03-09 20:25:34.415 [Thread-8] ExFsParser - http://ex-fs.net, respponse status 200
-[DEBUG] 2017-03-09 20:25:34.417 [Thread-8] ExFsParser - Response cookie: PHPSESSID=6357b50ca17afe208a6db8d4bc3ee4b0; 
-[INFO ] 2017-03-09 20:25:34.475 [JavaFX Application Thread] CatalogController - Items loaded
-[DEBUG] 2017-03-09 20:25:35.770 [JavaFX Application Thread] ExFsParser - http://ex-fs.net, respponse status 200
-[DEBUG] 2017-03-09 20:25:35.770 [JavaFX Application Thread] ExFsParser - Response cookie: PHPSESSID=6357b50ca17afe208a6db8d4bc3ee4b0; __cfduid=d6401001d93b3ff3d12c9bf1f7a024f5d1489083942; 
-[DEBUG] 2017-03-09 20:25:35.991 [JavaFX Application Thread] ExFsParser - Regex found: 50514ec12fafe8be
-[DEBUG] 2017-03-09 20:25:35.992 [JavaFX Application Thread] ExFsParser - Regex found: movie
-[DEBUG] 2017-03-09 20:25:35.993 [JavaFX Application Thread] ExFsParser - Regex found: f5a9fc6888e7bc5cb41ffd4aa558cc51
-[DEBUG] 2017-03-09 20:25:35.993 [JavaFX Application Thread] ExFsParser - Regex found: 513
-[DEBUG] 2017-03-09 20:25:35.994 [JavaFX Application Thread] ExFsParser - Regex found: 12727
-[DEBUG] 2017-03-09 20:25:35.994 [JavaFX Application Thread] ExFsParser - Regex found: 271e1376a60c9063d9cb7486a56951ca
-[DEBUG] 2017-03-09 20:25:36.230 [JavaFX Application Thread] ExFsParser - Test response: {"mans":{"manifest_f4m":"http://streamblast.cc/video/50514ec12fafe8be/manifest.f4m?cd=0\u0026expired=1489094743\u0026mw_pid=513\u0026signature=993e819cc5efea0d2673c751aa9de53e","manifest_m3u8":"http://streamblast.cc/video/50514ec12fafe8be/index.m3u8?cd=0\u0026expired=1489094743\u0026mw_pid=513\u0026signature=993e819cc5efea0d2673c751aa9de53e","manifest_dash":"http://streamblast.cc/video/50514ec12fafe8be/manifest.mpd?cd=0\u0026expired=1489094743\u0026mw_pid=513\u0026signature=993e819cc5efea0d2673c751aa9de53e","manifest_mp4":null}}
-[DEBUG] 2017-03-09 20:25:36.231 [JavaFX Application Thread] ExFsParser - Regex found: http://streamblast.cc/video/50514ec12fafe8be/index.m3u8?cd=0\u0026expired=1489094743\u0026mw_pid=513\u0026signature=993e819cc5efea0d2673c751aa9de53e
-[DEBUG] 2017-03-09 20:25:41.869 [Thread-10] ExFsParser - Check response: #EXTM3U
-#EXT-X-STREAM-INF:RESOLUTION=640x270,BANDWIDTH=392000
-http://185.38.12.43/sec/1489116348/35383039f48abe1c54f1dc35d376449c97d33b79a9a009d8/ivs/8e/1d/f07d6bf7430a/hls/tracks-3,4/index.m3u8
-#EXT-X-STREAM-INF:RESOLUTION=1136x480,BANDWIDTH=587000
-http://185.38.12.43/sec/1489116348/393334348c682914bf9403f21512813a60fe4544ac3442c2/ivs/8e/1d/f07d6bf7430a/hls/tracks-2,4/index.m3u8
-#EXT-X-STREAM-INF:RESOLUTION=1280x540,BANDWIDTH=939000
-http://185.38.12.43/sec/1489116348/34313630d51f6dab1f7766670227defc4996458ddcf36621/ivs/8e/1d/f07d6bf7430a/hls/tracks-1,4/index.m3u8
-
-[DEBUG] 2017-03-09 20:26:23.616 [Thread-12] ExFsParser - Check response: #EXTM3U
-#EXT-X-STREAM-INF:RESOLUTION=640x270,BANDWIDTH=392000
-http://185.38.12.43/sec/1489116390/343131357194286995e031fdf715b026ee0f8581a651f97e/ivs/8e/1d/f07d6bf7430a/hls/tracks-3,4/index.m3u8
-#EXT-X-STREAM-INF:RESOLUTION=1136x480,BANDWIDTH=587000
-http://185.38.12.43/sec/1489116390/3932333967448bdc5f47469a2760cac3052e4df3b6a0c9f6/ivs/8e/1d/f07d6bf7430a/hls/tracks-2,4/index.m3u8
-#EXT-X-STREAM-INF:RESOLUTION=1280x540,BANDWIDTH=939000
-http://185.38.12.43/sec/1489116390/39363935a88f3f9e82ab5091614c49b83c5a5009b742b85a/ivs/8e/1d/f07d6bf7430a/hls/tracks-1,4/index.m3u8
-
+[INFO ] 2017-03-09 20:54:06.012 [JavaFX Application Thread] MainApp - Base window loaded
+[INFO ] 2017-03-09 20:54:06.051 [JavaFX Application Thread] MainApp - Catalog panel loaded
+[INFO ] 2017-03-09 20:54:07.799 [JavaFX Application Thread] CatalogController - Items loaded
