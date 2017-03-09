@@ -67,6 +67,7 @@ public class MainApp extends Application {
 		initItemBrowserLayout();
 		root.initRightSidePane(catalogLayout);
 		this.primaryStage.show();
+		logger.info("Application started");
 	}
 	private void initRootWindowLayout() {
 		try {

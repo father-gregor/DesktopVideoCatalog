@@ -1,3 +1,5 @@
-[INFO ] 2017-03-09 20:54:06.012 [JavaFX Application Thread] MainApp - Base window loaded
-[INFO ] 2017-03-09 20:54:06.051 [JavaFX Application Thread] MainApp - Catalog panel loaded
-[INFO ] 2017-03-09 20:54:07.799 [JavaFX Application Thread] CatalogController - Items loaded
+[INFO ] 2017-03-09 22:00:27.832 [JavaFX Application Thread] MainApp - Base window loaded
+[INFO ] 2017-03-09 22:00:27.870 [JavaFX Application Thread] MainApp - Catalog panel loaded
+[INFO ] 2017-03-09 22:00:28.691 [JavaFX Application Thread] MainApp - Application started
+[INFO ] 2017-03-09 22:00:29.593 [JavaFX Application Thread] CatalogController - Items loaded
+[INFO ] 2017-03-09 22:00:41.854 [JavaFX Application Thread] CatalogController - Item clicked: Хорошие дети

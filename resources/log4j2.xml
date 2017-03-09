@@ -23,7 +23,7 @@
  
 <Loggers>
         <Logger name="com.benlinus92.dskvideocatalog" level="debug">
-            <AppenderRef ref="File-Appender" level="debug"/>               
+            <AppenderRef ref="File-Appender" level="info"/>               
         </Logger>
         <Root level="debug">
             <AppenderRef ref="Console-Appender"/>

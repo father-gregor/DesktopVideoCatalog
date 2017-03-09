@@ -60,7 +60,6 @@ public class CatalogController {
 		backgroundThread = new Thread();
 		scrollMaxEvent = (ObservableValue<? extends Number> ov, Number oldV, Number newV) -> {
 			if(newV.doubleValue() >= (scrollCatalogPane.getVmax() - 0.2)) {
-				System.out.println(scrollCatalogPane.getVmax());
 				scrollCatalogPane.vvalueProperty().removeListener(scrollMaxEvent);
 				startUpdateCatalogThread();
 			}
@@ -78,14 +77,12 @@ public class CatalogController {
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
-				//List<SimpleVideoItem> items = mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage);
 				List<GridPane> gridItemsList = new ArrayList<>();
 				for(SimpleVideoItem itemObj: mainApp.getCurrentParser().getVideoItemsByCategory(currentCategory, currentPage)) {
 					gridItemsList.add(createGridForVideoItem(itemObj));
 				}
 				currentPage++;
 				loadImagesAsync();
-				System.out.println(currentPage);
 				Platform.runLater(new Runnable() {	
 					@Override
 					public void run() {
@@ -110,9 +107,6 @@ public class CatalogController {
 	}
 	private GridPane createGridForVideoItem(SimpleVideoItem itemObj) {
 		GridPane videoItemPane = new GridPane();
-		/*Image image = new Image(itemObj.getPrevImg());
-		if(image.isError())
-			image = downloadImageWithHttpClient(itemObj.getPrevImg());*/
 		ImageView itemImage = new ImageView();//image
 		itemImage.setFitWidth(135.0);
 		itemImage.setFitHeight(180.0);
@@ -179,9 +173,7 @@ public class CatalogController {
 
 		@Override
 		public void handle(MouseEvent me) {
-			System.out.println("SCENE: " + mainTilePane.getScene());
-			System.out.println("Clicked");
-			System.out.println( ((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getTitle() );
+			logger.info("Item clicked: {}", ((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getTitle() );
 			mainApp.openItemBrowser(((SimpleVideoItem)((GridPane)me.getSource()).getUserData()).getUrl());
 		}
 	}
