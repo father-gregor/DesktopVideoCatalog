@@ -1,8 +1,6 @@
 package com.benlinus92.dskvideocatalog.parsers;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,9 +16,14 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -39,12 +42,13 @@ import com.benlinus92.dskvideocatalog.model.VideoTranslationType;
  * It has methods for retrieving data from site and parsing it with {@link org.jsoup.Jsoup}.
  */
 public class ExFsParser extends Parser {
+	
+	private final Logger logger = LogManager.getLogger();
+	
 	private final static String EXFS_FILMS_URL = "http://ex-fs.net/films/page/";
 	private final static String EXFS_SERIES_URL = "http://ex-fs.net/series/page/";
 	private final static String EXFS_CARTOONS_URL = "http://ex-fs.net/cartoon/page/";
 	private final static String EXFS_BASIC_URL = "http://ex-fs.net";
-	private final static String EXFS_PLAYLIST_URL = 
-			"http://cdn.ex-fs.net/video/VIDEOTOKEN/index.m3u8?cd=0&mw_pid=PIDTOKEN&man_type=reorder2&man_arg=2";
 	private final static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.MM.yyyy");
 	private String cookieStr = "";
 	
@@ -57,12 +61,12 @@ public class ExFsParser extends Parser {
 	}
 
 	@Override
-	public String getHtmlContent(String url) throws IOException {
+	public String getHtmlContent(String url) throws IOException, ClientProtocolException {
 		HttpClient client = getHttpClient(6);
 		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", AppConstants.MOBILE_USER_AGENT); 
 		HttpResponse response = client.execute(request);
-		System.out.println(EXFS_BASIC_URL + " -  status " + response.getStatusLine().getStatusCode());
+		logger.debug("{}, respponse status {}", EXFS_BASIC_URL, response.getStatusLine().getStatusCode());
 		for(Header header: Arrays.asList(response.getHeaders("Set-Cookie"))) {
 			if(header.getValue().contains("__cfduid=") && !cookieStr.contains("__cfduid=")) {
 				cookieStr = cookieStr + header.getValue().split(";")[0] + "; ";
@@ -70,13 +74,8 @@ public class ExFsParser extends Parser {
 				cookieStr = cookieStr + header.getValue().split(";")[0] + "; ";
 			}
 		}
-		System.out.println(cookieStr);
-		BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-		String line = null;
-		StringBuilder sb = new StringBuilder();
-		while((line = br.readLine()) != null)
-			sb.append(line);
-		return sb.toString();
+		logger.debug("Response cookie: {}", cookieStr);
+		return EntityUtils.toString(response.getEntity(), "UTF-8");
 	}
 
 	@Override
@@ -96,9 +95,9 @@ public class ExFsParser extends Parser {
 				itemsList.add(createCatalogVideoItemFromHtml(elem));
 			}
 		} catch(ClientProtocolException e) {
-			e.printStackTrace();
+			logger.fatal("Connection to {} not established: {}", getWebSiteName(), e);
 		} catch(IOException e) {
-			e.printStackTrace();
+			logger.fatal("Error while reading response entity: {}", e);
 		} 
 		return itemsList;
 	}
@@ -131,10 +130,10 @@ public class ExFsParser extends Parser {
 					item.setVideoTransTypeList(getVideoTranslationList(url, elem.attr("src"), item.getTitle() + " (" + item.getYear() + ")"));
 			}
 		} catch(ClientProtocolException e) {
-			e.printStackTrace();
+			logger.fatal("Connection to {} not established: {}", getWebSiteName(), e);
 		} catch(IOException e) {
-			e.printStackTrace();
-		}
+			logger.fatal("Error while reading response entity: {}", e);
+		} 
 		return item;
 	}
 	@Override
@@ -175,8 +174,19 @@ public class ExFsParser extends Parser {
 			getRequest.addHeader(new BasicHeader("Referer", originalUrl));
 			HttpResponse response = client.execute(getRequest);
 			String respContent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
+			
+			HttpPost post = new HttpPost("http://cdn.ex-fs.net/sessions/new_session");
+			post.addHeader(new BasicHeader("User-Agent", AppConstants.MOBILE_USER_AGENT));
+			post.addHeader(new BasicHeader("Cookie", cookieStr));
+			post.addHeader(new BasicHeader("X-Bool-Ray", "XRAY"));
+			post.addHeader(new BasicHeader("X-Requested-With", "XMLHttpRequest"));
+			post.setEntity(new UrlEncodedFormEntity(getParamsForPlaylistRequest(respContent)));
+			response = client.execute(post);
+			respContent = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
+			logger.debug("Test response: {}", respContent);
+			
 			VideoLink video = new VideoLink();
-			video.setLink(getPlaylistURL(respContent));
+			video.setLink(parseStringByTemplate("\"manifest_m3u8\":\"(.+?)\"", respContent).replace("\\u0026", "&"));//to replace wrong symbols from UTF-16 to UTF-8
 			video.setName(videoItemName + " - index.m3u8");
 			VideoTranslationType videoList = new VideoTranslationType();
 			videoList.addVideoLink(video);
@@ -184,19 +194,27 @@ public class ExFsParser extends Parser {
 			availablePlaylist.add(videoList);
 			
 		} catch(IOException | UnsupportedOperationException e) {
-			e.printStackTrace();
+			logger.fatal("Exception while connecting to remote host: {}", e);
 		}
 		return availablePlaylist;
 	}
-	private String getPlaylistURL(String webcontent) {
-		String mwPid = parseStringByTemplate("mw_pid:\\W([a-zA-Z0-9]+)", webcontent);
-		String videoToken = parseStringByTemplate("video_token:\\W'([a-zA-Z0-9]+)'", webcontent);
-		return EXFS_PLAYLIST_URL.replaceFirst("VIDEOTOKEN", videoToken).replaceFirst("PIDTOKEN", mwPid);
+	private List<BasicNameValuePair> getParamsForPlaylistRequest(String webcontent) {
+		List<BasicNameValuePair> list = new ArrayList<>();
+		list.add(new BasicNameValuePair("video_token", parseStringByTemplate("video_token:\\W'([a-zA-Z0-9]+)'", webcontent)));
+		list.add(new BasicNameValuePair("content_type", parseStringByTemplate("content_type:\\W'([a-zA-Z]+)'", webcontent)));
+		list.add(new BasicNameValuePair("mw_key", parseStringByTemplate("mw_key:\\W'([a-zA-Z0-9]+)'", webcontent)));
+		list.add(new BasicNameValuePair("mw_pid", parseStringByTemplate("mw_pid:\\W([0-9]+)", webcontent)));
+		list.add(new BasicNameValuePair("p_domain_id", parseStringByTemplate("p_domain_id:\\W([0-9]+)", webcontent)));
+		list.add(new BasicNameValuePair("ad_attr", "0"));
+		list.add(new BasicNameValuePair("debug", "false"));
+		list.add(new BasicNameValuePair("version_control", parseStringByTemplate("version_control\\W=\\W'([a-zA-Z0-9]+)'", webcontent)));
+		return list;
 	}
 	private String parseStringByTemplate(String template, String content) {
 		Pattern regex = Pattern.compile(template);
 		Matcher m = regex.matcher(content);
 		if(m.find()) {
+			logger.debug("Regex found: {}", m.group(1));
 			return m.group(1);
 		}
 		return "";
@@ -209,17 +227,16 @@ public class ExFsParser extends Parser {
 			request.addHeader("User-Agent", AppConstants.MOBILE_USER_AGENT);
 			HttpResponse response = client.execute(request);
 			String respContent = EntityUtils.toString(response.getEntity());
-			System.out.println("Check - " + respContent);
+			logger.debug("Check response: {}", respContent);
 			for(String line: respContent.split("#EXT-X-STREAM-INF:")) {
 				Pattern regex = Pattern.compile("RESOLUTION=[0-9]+?x([0-9]+)");
 				Matcher m = regex.matcher(line);
-				System.out.println(line + " size - " + availablePlaylist.size());
 				if(m.find()) {
 					availablePlaylist.put(m.group(1), line.substring(line.indexOf("http://")).trim());
 				}
 			}
 		} catch(IOException e) {
-			e.printStackTrace();
+			logger.fatal("Exception while getting playlist {}: {}", link, e);
 		}
 		return availablePlaylist;
 	}
