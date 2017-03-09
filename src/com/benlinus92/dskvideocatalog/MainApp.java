@@ -54,9 +54,7 @@ public class MainApp extends Application {
 	private CatalogController catalog;
 	private ItemBrowserController itemBrowser;
 	private VideoListController videoList;
-	private Runtime runtime = Runtime.getRuntime();
 	private Parser currentParser;
-	private List<Pane> savedPanesList = new ArrayList<>();
 	private CatalogStateHandler currentState = new CatalogStateHandler();
 	
 	@Override
@@ -85,7 +83,7 @@ public class MainApp extends Application {
 			primaryStage.setOnCloseRequest(e -> Platform.exit());
 			logger.info("Base window loaded");
 		} catch(IOException e) {
-			logger.error("Exception occured - {}", e.getMessage());
+			logger.fatal("Exception occured while root window loading: {}", e);
 		}
 	}
 	private void initCatalogLayout() {
@@ -98,7 +96,7 @@ public class MainApp extends Application {
 			catalog.startUpdateCatalogThread();
 			logger.info("Catalog panel loaded");
 		} catch(IOException e) {
-			logger.error("Exception occured - {}", e.getMessage());
+			logger.fatal("Exception occured while catalog layout loading: {}", e);
 		}
 	}
 	private void initItemBrowserLayout() {
@@ -109,7 +107,7 @@ public class MainApp extends Application {
 			itemBrowser = fxml.getController();
 			itemBrowser.setMainApp(this);
 		} catch(Exception e) {
-			e.printStackTrace();
+			logger.fatal("Exception occured while item browser loading: {}", e);
 		}
 	}
 	public void initImageViewerWindow(Image image) {
@@ -135,8 +133,8 @@ public class MainApp extends Application {
 			imageStage.setMinHeight(image.getHeight());
 			imageStage.setMinWidth(image.getWidth());
 			imageStage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
+		} catch(IOException e) {
+			logger.fatal("Exception occured while image window loading: {}", e);
 		}
 	}
 	public void initVideoListLayout(VideoTranslationType videoItem, MediaStream streamType) {
@@ -150,7 +148,7 @@ public class MainApp extends Application {
 			videoList.initializeVideoList(videoItem, streamType);
 			itemBrowser.setLinksTabContent(videoListPane);
 		} catch(IOException e) {
-			e.printStackTrace();
+			logger.fatal("Exception occured while video list loading: {}", e);
 		}
 	}
 
@@ -181,7 +179,7 @@ public class MainApp extends Application {
 			});
 			playerStage.show();
 		} catch(IOException e) {
-			e.printStackTrace();
+			logger.fatal("Exception occured while media player window loading: {}", e);
 		}
 	}
 	public void initSettingsWindow() {
@@ -201,7 +199,7 @@ public class MainApp extends Application {
 			});
 			settingsStage.show();
 		} catch(IOException e) {
-			e.printStackTrace();
+			logger.fatal("Exception occured while settings window loading: {}", e);
 		}
 	}
 	public void openMainWindow() {
@@ -236,26 +234,11 @@ public class MainApp extends Application {
 	public CatalogController getCatalogController() {
 		return this.catalog;
 	}
-	public Runtime getRuntime() {
-		return this.runtime;
-	}
 	public Parser getCurrentParser() {
 		return this.currentParser;
 	}
 	public void setCurrentParser(Parser parser) {
 		this.currentParser = parser;
-	}
-	public void addPaneToSavedStateList(Pane state) {
-		this.savedPanesList.add(state);
-	}
-	public void removePaneFromSavedStateList() {
-		this.savedPanesList.remove(this.savedPanesList.size() - 1);
-	}
-	public Pane getLastSavedPane() {
-		return this.savedPanesList.get(this.savedPanesList.size() - 1);
-	}
-	public int getSavedStateListSize() {
-		return this.savedPanesList.size();
 	}
 	public CatalogStateHandler getCurrentState() {
 		return currentState;
