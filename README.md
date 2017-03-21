@@ -1,4 +1,4 @@
-# DesktopVideoCatalog
+# Desktop Video Catalog
 Video catalog project using JavaFX 8.
 
 Application gives you ability to browse catalog of movies, series, cartoons from variety of websites. Its worked as standalone desktop application and requires Java 8 installed.
